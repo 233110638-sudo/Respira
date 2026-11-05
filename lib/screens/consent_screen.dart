@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
 import '../core_theme.dart';
-import 'crisis_screen.dart';
 import 'wellbeing_check_screen.dart';
 
 class ConsentScreen extends StatefulWidget {
@@ -12,152 +10,238 @@ class ConsentScreen extends StatefulWidget {
 }
 
 class _ConsentScreenState extends State<ConsentScreen> {
-  bool aceptado = false;
+  bool _aceptaTerminos = false;
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Antes de comenzar'),
-        actions: [
-          IconButton(
-            tooltip: 'Necesito ayuda ahora',
-            icon: const Icon(Icons.support_rounded, color: AppColors.alerta),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CrisisScreen()),
-            ),
-          ),
-        ],
+  void _mostrarAvisoPrivacidad() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.7,
+          minChildSize: 0.4,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+              child: ListView(
+                controller: scrollController,
                 children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: AppColors.primarioClaro,
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: const Icon(
-                      Icons.favorite_outline_rounded,
-                      color: AppColors.primario,
-                      size: 30,
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  Text(
-                    'Tu bienestar importa',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Respira ofrece ejercicios y orientación general para acompañarte. No reemplaza una evaluación, diagnóstico ni tratamiento de profesionales de la salud.',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 20),
-                  const _NoteCard(
-                    icon: Icons.lock_outline_rounded,
-                    title: 'Un espacio personal',
-                    description: 'Este prototipo no crea una cuenta ni envía tus respuestas a un servicio externo.',
-                  ),
-                  const SizedBox(height: 12),
-                  const _NoteCard(
-                    icon: Icons.support_agent_rounded,
-                    title: 'Pedir ayuda también es cuidarte',
-                    description: 'Si estás en peligro inmediato, busca ayuda de emergencias en tu localidad o de una persona de confianza.',
-                  ),
-                  const SizedBox(height: 18),
-                  Card(
-                    margin: EdgeInsets.zero,
-                    color: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                      side: const BorderSide(color: Color(0xFFE8ECE8)),
-                    ),
-                    child: CheckboxListTile(
-                      value: aceptado,
-                      onChanged: (value) =>
-                          setState(() => aceptado = value ?? false),
-                      controlAffinity: ListTileControlAffinity.leading,
-                      activeColor: AppColors.primario,
-                      title: const Text(
-                        'Entiendo el alcance de esta herramienta.',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Aviso de privacidad',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textoPrincipal,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'Tu privacidad y tranquilidad son fundamentales.',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      color: AppColors.textoPrincipal,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    '1. Almacenamiento local: Todas tus respuestas y registros permanecen estrictamente guardados en la memoria local de tu dispositivo. No se transmiten ni almacenan en servidores externos.',
+                    style: TextStyle(fontSize: 14, height: 1.45, color: AppColors.textoSecundario),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    '2. Sin perfilamiento comercial: Respira no recopila datos para fines publicitarios, mercadológicos ni venta de información a terceros.',
+                    style: TextStyle(fontSize: 14, height: 1.45, color: AppColors.textoSecundario),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    '3. Control absoluto: Puedes eliminar el historial de respuestas en cualquier momento desde los ajustes de la aplicación.',
+                    style: TextStyle(fontSize: 14, height: 1.45, color: AppColors.textoSecundario),
+                  ),
+                  const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
-                    child: FilledButton(
-                      onPressed: aceptado
-                          ? () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const WellbeingCheckScreen(),
-                              ),
-                            )
-                          : null,
-                      child: const Text('Continuar'),
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primario,
+                        shape: const StadiumBorder(),
+                      ),
+                      child: const Text('Entendido'),
                     ),
                   ),
                 ],
               ),
-            ),
-          ),
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
   }
-}
-
-class _NoteCard extends StatelessWidget {
-  const _NoteCard({
-    required this.icon,
-    required this.title,
-    required this.description,
-  });
-
-  final IconData icon;
-  final String title;
-  final String description;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: AppColors.primario),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+    return Scaffold(
+      backgroundColor: AppColors.fondo,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Botón de regresar
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: AppColors.textoPrincipal,
+                  size: 22,
                 ),
-                const SizedBox(height: 4),
-                Text(description, style: Theme.of(context).textTheme.bodySmall),
-              ],
-            ),
+                onPressed: () => Navigator.pop(context),
+              ),
+              const SizedBox(height: 28),
+              // Título
+              const Text(
+                'Antes de empezar',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 28),
+              // Puntos informativos
+              const Text(
+                'No es un diagnóstico',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textoPrincipal,
+                ),
+              ),
+              const SizedBox(height: 18),
+              const Text(
+                'Tus respuestas se quedan en tu teléfono',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textoPrincipal,
+                ),
+              ),
+              const SizedBox(height: 18),
+              const Text(
+                'Puedes borrarlas desde Ajustes',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textoPrincipal,
+                ),
+              ),
+              const SizedBox(height: 24),
+              // Enlace al aviso de privacidad
+              GestureDetector(
+                onTap: _mostrarAvisoPrivacidad,
+                child: const Text(
+                  'Leer aviso de privacidad completo',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primario,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              // Casilla de verificación
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: Checkbox(
+                      value: _aceptaTerminos,
+                      activeColor: AppColors.primario,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      onChanged: (val) {
+                        setState(() {
+                          _aceptaTerminos = val ?? false;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Acepto que Respira use mis respuestas para darme recomendaciones.',
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        color: AppColors.textoPrincipal,
+                        height: 1.3,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              // Botón Continuar
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: _aceptaTerminos
+                      ? () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const WellbeingCheckScreen(),
+                            ),
+                          );
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primario,
+                    disabledBackgroundColor: AppColors.primario.withOpacity(0.4),
+                    foregroundColor: Colors.white,
+                    disabledForegroundColor: Colors.white.withOpacity(0.8),
+                    shape: const StadiumBorder(),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Continuar',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

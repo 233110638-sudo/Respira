@@ -1,316 +1,303 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import '../core_theme.dart';
 
 class CrisisScreen extends StatelessWidget {
   const CrisisScreen({super.key});
 
-  void _copyToClipboard(BuildContext context, String text, String label) {
-    Clipboard.setData(ClipboardData(text: text));
+  void _copiarNumero(BuildContext context, String numero, String etiqueta) {
+    Clipboard.setData(ClipboardData(text: numero));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$label copiado al portapapeles: $text'),
+        content: Text('$etiqueta copiado: $numero'),
         duration: const Duration(seconds: 3),
         behavior: SnackBarBehavior.floating,
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFBF7F7),
-      appBar: AppBar(
-        title: const Text('Protocolo de apoyo y crisis'),
-        backgroundColor: const Color(0xFFFBF7F7),
+  void _mostrarMensajeConfianza(BuildContext context) {
+    const mensaje =
+        'Hola, estoy pasando por un momento muy difícil y necesito compañía o que me ayudes a contactar apoyo. ¿Podrías estar conmigo?';
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 580),
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(22, 12, 22, 32),
-              children: [
-                Container(
-                  width: 68,
-                  height: 68,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF9DEDA),
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: const Icon(
-                    Icons.support_rounded,
-                    color: AppColors.alerta,
-                    size: 36,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'No estás a solas. Tu vida y tu seguridad son lo primero.',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: const Color(0xFF5A2424),
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Si sientes que estás en peligro inmediato o estás pasando por un momento abrumador, por favor utiliza estas vías de ayuda gratuitas y disponibles las 24 horas:',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF4A4040),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Botón Línea de la Vida
-                _EmergencyActionCard(
-                  title: 'Línea de la Vida',
-                  subtitle: 'Atención psicológica y emocional gratuita, 24 horas.',
-                  phoneNumber: '800 911 2000',
-                  icon: Icons.phone_in_talk_rounded,
-                  color: AppColors.alerta,
-                  onCopy: () => _copyToClipboard(context, '8009112000', 'Número de la Línea de la Vida'),
-                ),
-                const SizedBox(height: 14),
-
-                // Botón Emergencias 911
-                _EmergencyActionCard(
-                  title: 'Servicio de Emergencias 911',
-                  subtitle: 'Si existe riesgo inmediato a tu integridad física o salud.',
-                  phoneNumber: '911',
-                  icon: Icons.emergency_rounded,
-                  color: const Color(0xFF8B2C2C),
-                  onCopy: () => _copyToClipboard(context, '911', 'Número de emergencias 911'),
-                ),
-                const SizedBox(height: 18),
-
-                // Sugerencia de escribir a alguien de confianza
-                Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFE8ECE8)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.primarioClaro,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(Icons.people_alt_outlined, color: AppColors.primario, size: 24),
-                          ),
-                          const SizedBox(width: 12),
-                          const Expanded(
-                            child: Text(
-                              'Escribe a alguien de confianza',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Pídele a un amigo, familiar o persona cercana que esté contigo en este momento. Si te cuesta ponerlo en palabras, puedes copiar este mensaje:',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF7F8F5),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xFFE0E5E0)),
-                        ),
-                        child: const Text(
-                          '“Hola, estoy pasando por un momento muy difícil y necesito compañía o que me ayudes a contactar apoyo. ¿Podrías estar conmigo?”',
-                          style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14, height: 1.4),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      OutlinedButton.icon(
-                        onPressed: () => _copyToClipboard(
-                          context,
-                          'Hola, estoy pasando por un momento muy difícil y necesito compañía o que me ayudes a contactar apoyo. ¿Podrías estar conmigo?',
-                          'Mensaje de apoyo',
-                        ),
-                        icon: const Icon(Icons.copy_rounded, size: 18),
-                        label: const Text('Copiar mensaje para enviar'),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 18),
-
-                // Recomendación de acudir con un psicólogo cuando esté a salvo
-                Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEAF1EC),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFCFDFD4)),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(Icons.psychology_outlined, color: AppColors.primario, size: 26),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Acude con un psicólogo cuando estés a salvo',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 15,
-                                color: AppColors.textoPrincipal,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Una vez asegurada tu tranquilidad inmediata, te recomendamos acudir con un profesional de la psicología para recibir el acompañamiento continuo y especializado que mereces.',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.45),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 18),
-
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF1EF),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Text(
-                    'Esta aplicación no es un servicio de emergencias ni realiza llamadas automáticas. Por favor marca a los números indicados si necesitas ayuda inmediata.',
-                    style: TextStyle(fontSize: 12.5, color: Color(0xFF6E4040)),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back_rounded),
-                    label: const Text('Volver a la pantalla anterior'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _EmergencyActionCard extends StatelessWidget {
-  const _EmergencyActionCard({
-    required this.title,
-    required this.subtitle,
-    required this.phoneNumber,
-    required this.icon,
-    required this.color,
-    required this.onCopy,
-  });
-
-  final String title;
-  final String subtitle;
-  final String phoneNumber;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onCopy;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.06),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Escribirle a alguien de confianza',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'A veces es difícil encontrar las palabras exactas. Puedes copiar y enviar este mensaje:',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textoSecundario,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 14),
               Container(
-                width: 44,
-                height: 44,
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(14),
+                  color: const Color(0xFFF7F8F7),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE2E6E3)),
                 ),
-                child: Icon(icon, color: color, size: 24),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                        color: color,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  phoneNumber,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.8,
+                child: const Text(
+                  '“$mensaje”',
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 14.5,
+                    height: 1.45,
                     color: AppColors.textoPrincipal,
                   ),
                 ),
               ),
-              FilledButton.icon(
-                style: FilledButton.styleFrom(
-                  backgroundColor: color,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Clipboard.setData(const ClipboardData(text: mensaje));
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Mensaje copiado al portapapeles.'),
+                        duration: Duration(seconds: 3),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.copy_rounded, size: 18),
+                  label: const Text('Copiar mensaje'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primario,
+                    shape: const StadiumBorder(),
+                  ),
                 ),
-                onPressed: onCopy,
-                icon: const Icon(Icons.phone_rounded, size: 18),
-                label: const Text('Marcar / Copiar'),
               ),
             ],
           ),
-        ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.fondo,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 16),
+              // Título
+              const Text(
+                'Gracias por contarnos',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Subtítulo
+              const Text(
+                'Hay personas listas para escucharte ahora mismo.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textoSecundario,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // Tarjeta 1: Línea de la Vida (Rojo sólido)
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => _copiarNumero(
+                    context,
+                    '8009112000',
+                    'Número de la Línea de la Vida',
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 22,
+                      vertical: 18,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.alerta,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.alerta.withOpacity(0.25),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Llamar a la Línea de la Vida',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          '800 911 2000 · gratis, 24 horas',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+
+              // Tarjeta 2: Llamar al 911 (Borde rojo)
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => _copiarNumero(
+                    context,
+                    '911',
+                    'Número del 911',
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 22,
+                      vertical: 18,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.alerta, width: 1.5),
+                    ),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Llamar al 911',
+                          style: TextStyle(
+                            color: AppColors.alerta,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Si estás en peligro inmediato',
+                          style: TextStyle(
+                            color: AppColors.textoSecundario,
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+
+              // Tarjeta 3: Escribirle a alguien de confianza (Gris suave)
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => _mostrarMensajeConfianza(context),
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 22,
+                      vertical: 20,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF0F3F1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Escribirle a alguien de confianza',
+                      style: TextStyle(
+                        color: AppColors.textoPrincipal,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              const Spacer(),
+
+              // Enlace centrado inferior: Ya estoy mejor, volver
+              Center(
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    child: Text(
+                      'Ya estoy mejor, volver',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primario,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
       ),
     );
   }

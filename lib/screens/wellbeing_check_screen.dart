@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../core_theme.dart';
+import '../widgets/crisis_badge_button.dart';
 import 'crisis_screen.dart';
 import 'recommendations_screen.dart';
 
@@ -85,6 +85,11 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
   }
 
   void _onNext() {
+    // Si no ha seleccionado ninguna opción aún, por defecto consideramos la primera ("Nunca")
+    if (!_answers.containsKey(_currentIndex)) {
+      _answers[_currentIndex] = 0;
+    }
+
     if (_currentIndex < _questions.length - 1) {
       setState(() {
         _currentIndex++;
@@ -99,13 +104,15 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
       setState(() {
         _currentIndex--;
       });
+    } else {
+      Navigator.pop(context);
     }
   }
 
   void _finishAssessment() {
     final q8Answer = _answers[7] ?? 0;
 
-    // Regla: Cualquier respuesta distinta de "Nunca" en la pregunta 8 activa el protocolo de crisis
+    // Si respondió algo distinto a "Nunca" en la pregunta de seguridad (8), activar protocolo de crisis
     if (q8Answer > 0) {
       Navigator.pushReplacement(
         context,
@@ -114,15 +121,12 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
       return;
     }
 
-    // Suma interna de las preguntas 1 a 7 (0 a 21 puntos)
+    // Suma de preguntas 1 a 7 (0 a 21 puntos)
     var score = 0;
     for (var i = 0; i < 7; i++) {
       score += _answers[i] ?? 0;
     }
 
-    // Regla interna:
-    // 10-21 puntos -> Ejercicios de calma y psicólogo destacado
-    // 0-9 puntos -> Ejercicios de bienestar y artículos
     final resultType = score >= 10
         ? WellbeingResultType.calmAndPsychologist
         : WellbeingResultType.wellnessAndArticles;
@@ -140,216 +144,179 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
     final currentQ = _questions[_currentIndex];
     final selectedOption = _answers[_currentIndex];
     final progress = (_currentIndex + 1) / _questions.length;
-    final isLastQuestion = _currentIndex == _questions.length - 1;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chequeo de bienestar'),
-        actions: [
-          IconButton(
-            tooltip: 'Necesito ayuda ahora',
-            icon: const Icon(Icons.support_rounded, color: AppColors.alerta),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CrisisScreen()),
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.fondo,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 580),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Barra superior: flecha de regreso + botón rojo "Necesito ayuda ahora"
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Barra de progreso y contador
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Pregunta ${_currentIndex + 1} de ${_questions.length}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primario,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.primarioClaro,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Text(
-                          'Piensa en las últimas 2 semanas',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textoPrincipal,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: LinearProgressIndicator(
-                      value: progress,
-                      minHeight: 8,
-                      backgroundColor: const Color(0xFFE4EEE7),
-                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primario),
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: AppColors.textoPrincipal,
+                      size: 22,
                     ),
+                    onPressed: _onPrevious,
                   ),
-                  const SizedBox(height: 24),
-
-                  // Contenido de la pregunta
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(22),
-                              border: Border.all(color: const Color(0xFFE8ECE8)),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  currentQ.question,
-                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                    fontSize: 21,
-                                    fontWeight: FontWeight.w700,
-                                    height: 1.35,
-                                  ),
-                                ),
-                                if (currentQ.isSafetyQuestion) ...[
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    'Tu bienestar y seguridad son fundamentales para nosotros.',
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.alerta,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 18),
-
-                          // Opciones de respuesta
-                          for (var i = 0; i < _options.length; i++) ...[
-                            _QuestionOptionTile(
-                              title: _options[i],
-                              isSelected: selectedOption == i,
-                              onTap: () => _onOptionSelected(i),
-                            ),
-                            const SizedBox(height: 10),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Barra de navegación inferior
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      if (_currentIndex > 0) ...[
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            onPressed: _onPrevious,
-                            child: const Text('Anterior'),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                      ],
-                      Expanded(
-                        flex: 2,
-                        child: FilledButton(
-                          onPressed: selectedOption == null ? null : _onNext,
-                          child: Text(
-                            isLastQuestion ? 'Ver recomendaciones' : 'Siguiente pregunta',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  const CrisisBadgeButton(),
                 ],
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _QuestionOptionTile extends StatelessWidget {
-  const _QuestionOptionTile({
-    required this.title,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String title;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: isSelected ? AppColors.primarioClaro : Colors.white,
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: isSelected ? AppColors.primario : const Color(0xFFE8ECE8),
-              width: isSelected ? 2 : 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isSelected ? AppColors.primario : Colors.transparent,
-                  border: Border.all(
-                    color: isSelected ? AppColors.primario : const Color(0xFFB5BEB7),
-                    width: 2,
+              const SizedBox(height: 20),
+              // Subtítulo con progreso y contexto temporal
+              Text(
+                '${_currentIndex + 1} de ${_questions.length} · últimas 2 semanas',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textoSecundario,
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Barra delgada de progreso
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 4,
+                  backgroundColor: const Color(0xFFDCE7E2),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppColors.primario,
                   ),
                 ),
-                child: isSelected
-                    ? const Icon(Icons.check, size: 16, color: Colors.white)
-                    : null,
               ),
-              const SizedBox(width: 14),
+              const SizedBox(height: 28),
+              // Pregunta
+              Text(
+                currentQ.question,
+                style: const TextStyle(
+                  fontSize: 23,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                  height: 1.28,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              const SizedBox(height: 28),
+              // Opciones de respuesta
               Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? AppColors.textoPrincipal : AppColors.textoPrincipal,
+                child: ListView.separated(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: _options.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final isSelected = selectedOption == index;
+                    return Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => _onOptionSelected(index),
+                        borderRadius: BorderRadius.circular(16),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 180),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 18,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? const Color(0xFFE8F1EC)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isSelected
+                                  ? const Color(0xFFC3DACF)
+                                  : const Color(0xFFE2E6E3),
+                              width: isSelected ? 1.4 : 1.0,
+                            ),
+                            boxShadow: isSelected
+                                ? []
+                                : [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.02),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                          ),
+                          child: Row(
+                            children: [
+                              // Icono circular de radio
+                              Container(
+                                width: 22,
+                                height: 22,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? AppColors.primario
+                                        : const Color(0xFF75827B),
+                                    width: isSelected ? 2.2 : 1.8,
+                                  ),
+                                ),
+                                child: isSelected
+                                    ? Center(
+                                        child: Container(
+                                          width: 10,
+                                          height: 10,
+                                          decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: AppColors.primario,
+                                          ),
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Text(
+                                  _options[index],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                    color: AppColors.textoPrincipal,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // Botón Siguiente
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: _onNext,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primario,
+                    foregroundColor: Colors.white,
+                    shape: const StadiumBorder(),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Siguiente',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
+              const SizedBox(height: 8),
             ],
           ),
         ),

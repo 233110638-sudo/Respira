@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../core_theme.dart';
-import 'crisis_screen.dart';
+import '../widgets/crisis_badge_button.dart';
 
 class ArticleItem {
   const ArticleItem({
@@ -67,70 +66,61 @@ const articlesList = <ArticleItem>[
 ];
 
 class ArticlesScreen extends StatelessWidget {
-  const ArticlesScreen({super.key});
+  const ArticlesScreen({this.isEmbedded = false, super.key});
+
+  final bool isEmbedded;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Artículos de bienestar'),
-        actions: [
-          IconButton(
-            tooltip: 'Necesito ayuda ahora',
-            icon: const Icon(Icons.support_rounded, color: AppColors.alerta),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CrisisScreen()),
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.fondo,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 620),
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(22, 16, 22, 32),
-              children: [
-                Text(
-                  'Lecturas de nuestra psicóloga',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Textos breves con orientación práctica para cuidar de tu mente y tu cuerpo.',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 22),
-                for (final article in articlesList) ...[
-                  _ArticleCard(article: article),
-                  const SizedBox(height: 14),
-                ],
-                const SizedBox(height: 18),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.primarioClaro,
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.psychology_outlined, color: AppColors.primario, size: 28),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          'Estos artículos son informativos. Si sientes que la sobrecarga persiste, te recomendamos consultar con un profesional de la psicología.',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textoPrincipal,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (!isEmbedded)
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: AppColors.textoPrincipal,
+                        size: 22,
                       ),
-                    ],
-                  ),
+                      onPressed: () => Navigator.pop(context),
+                    )
+                  else
+                    const SizedBox.shrink(),
+                  const CrisisBadgeButton(),
+                ],
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Artículos de bienestar',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                  letterSpacing: -0.5,
                 ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Lecturas breves con orientación práctica para cuidar de tu mente.',
+                style: TextStyle(fontSize: 15, color: AppColors.textoSecundario),
+              ),
+              const SizedBox(height: 24),
+              for (final article in articlesList) ...[
+                _ArticleCard(article: article),
+                const SizedBox(height: 14),
               ],
-            ),
+              const SizedBox(height: 40),
+            ],
           ),
         ),
       ),
@@ -147,51 +137,56 @@ class _ArticleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
-      elevation: 0,
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ArticleDetailScreen(article: article),
-          ),
-        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => _ArticleDetailScreen(article: article),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(16),
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFE8ECE8)),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE2E6E3)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.primarioClaro,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      article.readingTime,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primario,
-                      ),
+                  Text(
+                    article.readingTime,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primario,
                     ),
                   ),
-                  const Spacer(),
-                  const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textoSecundario),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.textoSecundario,
+                    size: 20,
+                  ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Text(
                 article.title,
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 16.5,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textoPrincipal,
                 ),
@@ -199,7 +194,11 @@ class _ArticleCard extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 article.subtitle,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  color: AppColors.textoSecundario,
+                  height: 1.4,
+                ),
               ),
             ],
           ),
@@ -209,98 +208,84 @@ class _ArticleCard extends StatelessWidget {
   }
 }
 
-class ArticleDetailScreen extends StatelessWidget {
-  const ArticleDetailScreen({required this.article, super.key});
+class _ArticleDetailScreen extends StatelessWidget {
+  const _ArticleDetailScreen({required this.article});
 
   final ArticleItem article;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Artículo'),
-        actions: [
-          IconButton(
-            tooltip: 'Necesito ayuda ahora',
-            icon: const Icon(Icons.support_rounded, color: AppColors.alerta),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CrisisScreen()),
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.fondo,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: AppColors.primarioClaro,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    article.readingTime,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primario,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: AppColors.textoPrincipal,
+                      size: 22,
                     ),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  article.title,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Por ${article.author}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Divider(color: Color(0xFFE8ECE8)),
-                const SizedBox(height: 16),
-                for (final paragraph in article.content) ...[
-                  Text(
-                    paragraph,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 16),
+                  const CrisisBadgeButton(),
                 ],
-                const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1E9DD),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: const Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.psychology_rounded, color: Color(0xFF927449)),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Recuerda: Este artículo no sustituye una consulta médica o psicológica. Si deseas un proceso personalizado, te invitamos a acudir con un psicólogo.',
-                          style: TextStyle(fontSize: 14, height: 1.4),
-                        ),
-                      ),
-                    ],
+              ),
+              const SizedBox(height: 24),
+              Text(
+                article.readingTime,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primario,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                article.title,
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                article.author,
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textoSecundario,
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Divider(height: 1, color: Color(0xFFE2E6E3)),
+              const SizedBox(height: 24),
+              for (final paragraph in article.content) ...[
+                Text(
+                  paragraph,
+                  style: const TextStyle(
+                    fontSize: 15.5,
+                    height: 1.6,
+                    color: AppColors.textoPrincipal,
                   ),
                 ),
+                const SizedBox(height: 16),
               ],
-            ),
+              const SizedBox(height: 32),
+            ],
           ),
         ),
       ),
     );
   }
 }
-

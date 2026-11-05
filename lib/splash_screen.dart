@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'core_theme.dart';
 import 'screens/welcome_screen.dart';
+import 'widgets/respira_waves.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,32 +29,25 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE4EEE7),
+      backgroundColor: AppColors.fondo,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 108,
-              height: 108,
-              decoration: const BoxDecoration(
-                color: Color(0xFF587A68),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.spa_rounded,
-                size: 58,
-                color: Colors.white,
-              ),
+          children: const [
+            RespiraWaves(
+              width: 70,
+              height: 44,
+              color: AppColors.primario,
+              strokeWidth: 3.2,
             ),
-            const SizedBox(height: 18),
-            const Text(
-              'respira',
+            SizedBox(height: 20),
+            Text(
+              'Respira',
               style: TextStyle(
-                color: Color(0xFF26372F),
-                fontSize: 30,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
+                color: AppColors.textoPrincipal,
+                fontSize: 34,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
               ),
             ),
           ],

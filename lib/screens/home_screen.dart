@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
 import '../core_theme.dart';
-import '../widgets/action_card.dart';
-import '../widgets/section_label.dart';
 import 'articles_screen.dart';
 import 'breathing_screen.dart';
 import 'crisis_screen.dart';
@@ -10,213 +7,391 @@ import 'grounding_screen.dart';
 import 'support_someone_screen.dart';
 import 'wellbeing_check_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedTabIndex = 0;
+
+  void _mostrarInfoPsicologo() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Hablar con un psicólogo',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'La consulta con un profesional de la salud mental te brinda un espacio seguro, confidencial y sin juicios para entender tus emociones y adquirir herramientas personalizadas.',
+                style: TextStyle(
+                  fontSize: 15,
+                  height: 1.45,
+                  color: AppColors.textoSecundario,
+                ),
+              ),
+              const SizedBox(height: 14),
+              const Text(
+                'Si requieres orientación inmediata y gratuita las 24 horas, la Línea de la Vida (800 911 2000) cuenta con psicólogos capacitados listos para escucharte.',
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.45,
+                  color: AppColors.textoSecundario,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CrisisScreen()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.alerta,
+                    foregroundColor: Colors.white,
+                    shape: const StadiumBorder(),
+                  ),
+                  child: const Text('Ver líneas de ayuda disponibles'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHomeTabContent() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 16),
+          // Título de bienvenida
+          const Text(
+            '¿Cómo quieres cuidarte\nhoy?',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textoPrincipal,
+              height: 1.22,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 28),
+
+          // Tarjeta 1: Repetir chequeo de bienestar
+          _HomeActionCard(
+            title: 'Repetir chequeo de bienestar',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const WellbeingCheckScreen(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 14),
+
+          // Tarjeta 2: Hablar con un psicólogo
+          _HomeActionCard(
+            title: 'Hablar con un psicólogo',
+            onTap: _mostrarInfoPsicologo,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExercisesTabContent() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 16),
+          const Text(
+            'Ejercicios guiados',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textoPrincipal,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Pausas conscientes para regular tu sistema nervioso y conectar con el presente.',
+            style: TextStyle(fontSize: 15, color: AppColors.textoSecundario),
+          ),
+          const SizedBox(height: 24),
+          _HomeActionCard(
+            title: 'Respiración 4-7-8',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const BreathingScreen()),
+              );
+            },
+          ),
+          const SizedBox(height: 14),
+          _HomeActionCard(
+            title: 'Grounding 5-4-3-2-1',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const GroundingScreen()),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.fondo,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 650),
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(22, 18, 22, 32),
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: AppColors.primarioClaro,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const Icon(
-                        Icons.spa_rounded,
-                        color: AppColors.primario,
-                      ),
-                    ),
-                    const SizedBox(width: 11),
-                    const Text(
-                      'respira',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 22,
-                        letterSpacing: 0.4,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      tooltip: 'Necesito ayuda ahora',
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const CrisisScreen()),
-                      ),
-                      icon: const Icon(Icons.support_rounded, color: AppColors.alerta),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFE4EEE7), Color(0xFFF0F4EF)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(26),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SectionLabel('Un momento para ti'),
-                      const SizedBox(height: 10),
-                      Text(
-                        '¿Cómo te gustaría empezar?',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Herramientas sencillas para acompañarte, respirar con calma y cuidar de tu bienestar emocional.',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 26),
+        child: Stack(
+          children: [
+            // Contenido de la pestaña activa
+            Positioned.fill(
+              child: IndexedStack(
+                index: _selectedTabIndex,
+                children: [
+                  _buildHomeTabContent(),
+                  _buildExercisesTabContent(),
+                  const ArticlesScreen(isEmbedded: true),
+                  const SupportSomeoneScreen(isEmbedded: true),
+                ],
+              ),
+            ),
 
-                // Chequeo de bienestar principal
-                ActionCard(
-                  icon: Icons.checklist_rtl_rounded,
-                  title: 'Chequeo de bienestar',
-                  description: '8 preguntas breves para guiarte hacia las mejores recomendaciones.',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const WellbeingCheckScreen(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                const SectionLabel('Ejercicios de calma'),
-                const SizedBox(height: 12),
-                ActionCard(
-                  icon: Icons.air_rounded,
-                  title: 'Ejercicio de respiración',
-                  description: 'Una pausa guiada a tu propio ritmo para regular tu cuerpo.',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const BreathingScreen()),
-                  ),
-                ),
-                const SizedBox(height: 11),
-                ActionCard(
-                  icon: Icons.filter_center_focus_rounded,
-                  title: 'Ejercicio de conexión (Grounding)',
-                  description: 'Técnica 5-4-3-2-1 con tus sentidos para volver al presente.',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const GroundingScreen()),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                const SectionLabel('Orientación y lecturas'),
-                const SizedBox(height: 12),
-                ActionCard(
-                  icon: Icons.article_outlined,
-                  title: 'Artículos de la psicóloga',
-                  description: 'Consejos prácticos para comprender la sobrecarga y el descanso.',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ArticlesScreen()),
-                  ),
-                ),
-                const SizedBox(height: 11),
-                ActionCard(
-                  icon: Icons.diversity_1_rounded,
-                  title: 'Acompañar a alguien',
-                  description: 'Guía paso a paso para estar presente y escuchar con respeto.',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const SupportSomeoneScreen(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 26),
-
-                // Botón Necesito ayuda ahora
-                Material(
-                  color: const Color(0xFFFFF1EF),
-                  borderRadius: BorderRadius.circular(20),
-                  child: InkWell(
-                    onTap: () => Navigator.push(
+            // Botón flotante "Necesito ayuda ahora" alineado abajo a la derecha
+            Positioned(
+              right: 20,
+              bottom: 20,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const CrisisScreen()),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(30),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 13,
                     ),
-                    borderRadius: BorderRadius.circular(20),
-                    child: Padding(
-                      padding: const EdgeInsets.all(18),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF9DEDA),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: const Icon(
-                              Icons.support_rounded,
-                              color: AppColors.alerta,
-                            ),
+                    decoration: BoxDecoration(
+                      color: AppColors.alerta,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.alerta.withOpacity(0.32),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.call_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Necesito ayuda ahora',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
                           ),
-                          const SizedBox(width: 14),
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Necesito ayuda ahora',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
-                                    color: Color(0xFF803E3E),
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'Línea de la Vida (800 911 2000) y emergencias 911 disponibles 24 h.',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Color(0xFF805F5B),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 16,
-                            color: AppColors.alerta,
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
-                Text(
-                  'Respira es una herramienta de orientación general; no sustituye la evaluación ni el tratamiento de profesionales de la salud mental.',
-                  style: Theme.of(context).textTheme.bodySmall,
-                  textAlign: TextAlign.center,
-                ),
-              ],
+              ),
             ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            top: BorderSide(color: Color(0xFFE8ECE8), width: 1),
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavTabItem(
+              index: 0,
+              label: 'Inicio',
+              icon: Icons.home_rounded,
+            ),
+            _buildNavTabItem(
+              index: 1,
+              label: 'Ejercicios',
+              icon: Icons.spa_rounded,
+            ),
+            _buildNavTabItem(
+              index: 2,
+              label: 'Artículos',
+              icon: Icons.article_rounded,
+            ),
+            _buildNavTabItem(
+              index: 3,
+              label: 'Acompañar',
+              icon: Icons.people_rounded,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavTabItem({
+    required int index,
+    required String label,
+    required IconData icon,
+  }) {
+    final isSelected = _selectedTabIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedTabIndex = index),
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+            decoration: BoxDecoration(
+              color: isSelected ? const Color(0xFFDCE7E2) : Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(
+              icon,
+              size: 20,
+              color: isSelected
+                  ? AppColors.textoPrincipal
+                  : const Color(0xFF86928C),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              color: isSelected
+                  ? AppColors.textoPrincipal
+                  : const Color(0xFF86928C),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeActionCard extends StatelessWidget {
+  const _HomeActionCard({
+    required this.title,
+    required this.onTap,
+  });
+
+  final String title;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: const Color(0xFFE2E6E3)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textoPrincipal,
+                  ),
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textoPrincipal,
+                size: 22,
+              ),
+            ],
           ),
         ),
       ),

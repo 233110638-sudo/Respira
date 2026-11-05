@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../core_theme.dart';
+import '../widgets/respira_waves.dart';
 import 'consent_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -9,64 +9,72 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.fondo,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(28),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 24),
-                  Container(
-                    width: 190,
-                    height: 190,
-                    decoration: BoxDecoration(
-                      color: AppColors.primarioClaro,
-                      borderRadius: BorderRadius.circular(64),
-                    ),
-                    child: const Icon(
-                      Icons.spa_rounded,
-                      size: 96,
-                      color: AppColors.primario,
-                    ),
-                  ),
-                  const SizedBox(height: 38),
-                  Text(
-                    'Un espacio para volver a ti',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'Pequeños momentos de calma, orientación y apoyo para cuidar de tu bienestar emocional.',
-                    style: Theme.of(context).textTheme.bodyLarge
-                        ?.copyWith(color: AppColors.textoSecundario),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 34),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ConsentScreen(),
-                        ),
-                      ),
-                      icon: const Icon(Icons.arrow_forward_rounded),
-                      label: const Text('Comenzar'),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'A tu ritmo. Sin juicios.',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+          child: Column(
+            children: [
+              const Spacer(flex: 2),
+              // Icono de ondas de respiración
+              const RespiraWaves(
+                width: 60,
+                height: 38,
+                color: AppColors.primario,
+                strokeWidth: 3.0,
               ),
-            ),
+              const SizedBox(height: 22),
+              // Título Respira
+              const Text(
+                'Respira',
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const Spacer(flex: 3),
+              // Botón Comenzar
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ConsentScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primario,
+                    foregroundColor: Colors.white,
+                    shape: const StadiumBorder(),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Comenzar',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              // Texto aclaratorio inferior
+              const Text(
+                'Respira no da diagnósticos ni sustituye la atención de un profesional de la salud.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textoSecundario,
+                  height: 1.35,
+                ),
+              ),
+            ],
           ),
         ),
       ),

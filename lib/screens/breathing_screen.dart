@@ -1,9 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
 import '../core_theme.dart';
-import 'crisis_screen.dart';
+import '../widgets/crisis_badge_button.dart';
 
 class BreathingScreen extends StatefulWidget {
   const BreathingScreen({super.key});
@@ -12,39 +10,83 @@ class BreathingScreen extends StatefulWidget {
   State<BreathingScreen> createState() => _BreathingScreenState();
 }
 
+enum _BreathingPhase { inhala, sosten, exhala }
+
 class _BreathingScreenState extends State<BreathingScreen> {
   Timer? _timer;
-  int _second = 0;
-  bool _running = false;
+  bool _isRunning = true;
 
-  static const _phases = <String>['Inhala', 'Sostén', 'Exhala', 'Descansa'];
-  int get _phaseIndex => (_second ~/ 4) % _phases.length;
-  int get _secondsRemaining => 4 - (_second % 4);
-  double get _scale {
-    final progress = (_second % 4) / 4;
-    switch (_phaseIndex) {
-      case 0:
-        return 0.72 + (0.28 * progress);
-      case 1:
-        return 1;
-      case 2:
-        return 1 - (0.28 * progress);
-      default:
-        return 0.72;
+  _BreathingPhase _currentPhase = _BreathingPhase.inhala;
+  int _secondsLeftInPhase = 4;
+
+  static const int _inhalaDuration = 4;
+  static const int _sostenDuration = 7;
+  static const int _exhalaDuration = 8;
+
+  @override
+  void initState() {
+    super.initState();
+    _startBreathingCycle();
+  }
+
+  void _startBreathingCycle() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      if (!_isRunning) return;
+
+      setState(() {
+        if (_secondsLeftInPhase > 1) {
+          _secondsLeftInPhase--;
+        } else {
+          // Cambiar a la siguiente fase
+          switch (_currentPhase) {
+            case _BreathingPhase.inhala:
+              _currentPhase = _BreathingPhase.sosten;
+              _secondsLeftInPhase = _sostenDuration;
+              break;
+            case _BreathingPhase.sosten:
+              _currentPhase = _BreathingPhase.exhala;
+              _secondsLeftInPhase = _exhalaDuration;
+              break;
+            case _BreathingPhase.exhala:
+              _currentPhase = _BreathingPhase.inhala;
+              _secondsLeftInPhase = _inhalaDuration;
+              break;
+          }
+        }
+      });
+    });
+  }
+
+  void _togglePause() {
+    setState(() {
+      _isRunning = !_isRunning;
+    });
+  }
+
+  String get _phaseText {
+    switch (_currentPhase) {
+      case _BreathingPhase.inhala:
+        return 'Inhala';
+      case _BreathingPhase.sosten:
+        return 'Sostén';
+      case _BreathingPhase.exhala:
+        return 'Exhala';
     }
   }
 
-  void _toggle() {
-    if (_running) {
-      _timer?.cancel();
-      setState(() => _running = false);
-      return;
+  double get _circleScale {
+    switch (_currentPhase) {
+      case _BreathingPhase.inhala:
+        final progress = (4 - _secondsLeftInPhase) / 4;
+        return 0.82 + (0.18 * progress);
+      case _BreathingPhase.sosten:
+        return 1.0;
+      case _BreathingPhase.exhala:
+        final progress = (8 - _secondsLeftInPhase) / 8;
+        return 1.0 - (0.18 * progress);
     }
-    setState(() => _running = true);
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) return;
-      setState(() => _second = (_second + 1) % 16);
-    });
   }
 
   @override
@@ -56,120 +98,141 @@ class _BreathingScreenState extends State<BreathingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ejercicio de respiración'),
-        actions: [
-          IconButton(
-            tooltip: 'Necesito ayuda ahora',
-            icon: const Icon(Icons.support_rounded, color: AppColors.alerta),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CrisisScreen()),
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.fondoMenta,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: Column(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Column(
+            children: [
+              // Barra superior: botón cerrar (X) y botón "Necesito ayuda ahora"
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Vamos a respirar juntos',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Sigue el ritmo solo si te resulta cómodo. Puedes parar en cualquier momento.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 34),
-                  SizedBox(
-                    width: 250,
-                    height: 250,
-                    child: Center(
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 900),
-                        curve: Curves.easeInOut,
-                        width: 210 * _scale,
-                        height: 210 * _scale,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.primarioClaro,
-                          border: Border.all(
-                            color: AppColors.primario.withValues(alpha: 0.25),
-                            width: 2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primario.withValues(alpha: 0.08),
-                              blurRadius: 28,
-                              spreadRadius: 6,
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _running ? _phases[_phaseIndex] : 'A tu ritmo',
-                              style: const TextStyle(
-                                color: AppColors.primario,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            if (_running) ...[
-                              const SizedBox(height: 6),
-                              Text(
-                                '$_secondsRemaining',
-                                style: const TextStyle(
-                                  color: AppColors.textoSecundario,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      color: AppColors.textoPrincipal,
+                      size: 28,
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    _running
-                        ? 'Inhala · sostén · exhala · descansa'
-                        : 'Un ciclo suave de cuatro tiempos',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 30),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: _toggle,
-                      icon: Icon(
-                        _running
-                            ? Icons.pause_rounded
-                            : Icons.play_arrow_rounded,
-                      ),
-                      label: Text(
-                        _running ? 'Pausar ejercicio' : 'Comenzar ejercicio',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Terminar y volver'),
                   ),
+                  const CrisisBadgeButton(),
                 ],
               ),
-            ),
+              const SizedBox(height: 36),
+
+              // Título centrado
+              const Text(
+                'Respiración 4-7-8',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                  letterSpacing: -0.5,
+                ),
+              ),
+
+              const Spacer(),
+
+              // Círculo animado de respiración
+              Center(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 900),
+                  curve: Curves.easeInOut,
+                  width: 230 * _circleScale,
+                  height: 230 * _circleScale,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.primario,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primario.withOpacity(0.18),
+                        blurRadius: 30,
+                        spreadRadius: 8,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _phaseText,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '$_secondsLeftInPhase',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 58,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const Spacer(),
+
+              // Acciones inferiores: Pausar y Terminar
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Botón de texto: Pausar / Reanudar
+                    GestureDetector(
+                      onTap: _togglePause,
+                      behavior: HitTestBehavior.opaque,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: Text(
+                          _isRunning ? 'Pausar' : 'Reanudar',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textoPrincipal,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Botón cápsula: Terminar
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primario,
+                        foregroundColor: Colors.white,
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 36,
+                          vertical: 15,
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'Terminar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

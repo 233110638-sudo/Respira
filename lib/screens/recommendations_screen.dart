@@ -1,260 +1,191 @@
 import 'package:flutter/material.dart';
-
 import '../core_theme.dart';
-import '../widgets/action_card.dart';
-import '../widgets/section_label.dart';
-import 'articles_screen.dart';
+import '../widgets/crisis_badge_button.dart';
 import 'breathing_screen.dart';
-import 'crisis_screen.dart';
 import 'grounding_screen.dart';
 import 'home_screen.dart';
 
 enum WellbeingResultType {
-  calmAndPsychologist, // 10-21 puntos: Ejercicios de calma y psicólogo destacado
-  wellnessAndArticles, // 0-9 puntos: Ejercicios de bienestar y artículos
+  calmAndPsychologist, // Puntuación que sugiere calma y apoyo
+  wellnessAndArticles, // Puntuación de bienestar general
 }
 
 class RecommendationsScreen extends StatelessWidget {
   const RecommendationsScreen({
-    required this.resultType,
+    this.resultType = WellbeingResultType.wellnessAndArticles,
     super.key,
   });
 
   final WellbeingResultType resultType;
 
+  void _mostrarInfoPsicologo(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Hablar con un psicólogo',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'La consulta con un profesional de la salud mental te brinda un espacio seguro, confidencial y sin juicios para entender tus emociones y adquirir herramientas personalizadas.',
+                style: TextStyle(
+                  fontSize: 15,
+                  height: 1.45,
+                  color: AppColors.textoSecundario,
+                ),
+              ),
+              const SizedBox(height: 14),
+              const Text(
+                'Acudir a terapia no significa que algo esté mal en ti; es una decisión informada de autocuidado y prevención.',
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.45,
+                  color: AppColors.textoSecundario,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primario,
+                    shape: const StadiumBorder(),
+                  ),
+                  child: const Text('Cerrar'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isCalmFocus = resultType == WellbeingResultType.calmAndPsychologist;
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Recomendaciones'),
-        actions: [
-          IconButton(
-            tooltip: 'Necesito ayuda ahora',
-            icon: const Icon(Icons.support_rounded, color: AppColors.alerta),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CrisisScreen()),
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.fondo,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 580),
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(22, 16, 22, 32),
-              children: [
-                // Encabezado empático (sin puntajes ni etiquetas clínicas)
-                Container(
-                  padding: const EdgeInsets.all(22),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: isCalmFocus
-                          ? [const Color(0xFFF6EFE9), const Color(0xFFF9F5F1)]
-                          : [const Color(0xFFE4EEE7), const Color(0xFFF0F5F1)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: isCalmFocus
-                                  ? const Color(0xFFE8D7CA)
-                                  : AppColors.primarioClaro,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Icon(
-                              isCalmFocus
-                                  ? Icons.favorite_rounded
-                                  : Icons.spa_rounded,
-                              color: isCalmFocus
-                                  ? const Color(0xFF8C5836)
-                                  : AppColors.primario,
-                              size: 28,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Text(
-                              isCalmFocus
-                                  ? 'Cuidar de ti es prioritario'
-                                  : 'Espacios para tu bienestar',
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontSize: 20,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        isCalmFocus
-                          ? 'Has estado experimentando una sobrecarga notable en los últimos días. Recuerda que no tienes que resolver todo de inmediato; dar pequeños pasos y contar con apoyo hace la diferencia.'
-                          : 'Dedicar unos minutos a revisar cómo te sientes es un gran hábito. Te sugerimos actividades y lecturas para mantener tu equilibrio y tranquilidad.',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textoPrincipal,
-                          height: 1.45,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // 10-21 PUNTOS: Psicólogo destacado prioritario
-                if (isCalmFocus) ...[
-                  const SectionLabel('Acompañamiento profesional'),
-                  const SizedBox(height: 10),
-                  _PsychologistHighlightCard(
-                    isHighlighted: true,
-                    title: 'Te recomendamos acudir con un psicólogo',
-                    description:
-                        'Hablar con un profesional de la psicología te brindará un espacio seguro y confidencial, con herramientas personalizadas para transitar lo que estás viviendo.',
-                  ),
-                  const SizedBox(height: 24),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Barra superior: botón "Necesito ayuda ahora" a la derecha
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  CrisisBadgeButton(),
                 ],
-
-                // Sección de Ejercicios
-                SectionLabel(
-                  isCalmFocus ? 'Ejercicios de calma sugeridos' : 'Ejercicios de bienestar',
+              ),
+              const SizedBox(height: 24),
+              // Título
+              const Text(
+                'Esto es para ti',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                  letterSpacing: -0.5,
                 ),
-                const SizedBox(height: 10),
-
-                // Ejercicio de Respiración
-                ActionCard(
-                  icon: Icons.air_rounded,
-                  title: 'Ejercicio de respiración',
-                  description: 'Un ciclo suave guiado para desacelerar y soltar la tensión física.',
-                  onTap: () => Navigator.push(
+              ),
+              const SizedBox(height: 24),
+              // Tarjeta Respiración 4-7-8
+              _RecommendationCard(
+                title: 'Respiración 4-7-8',
+                onTap: () {
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const BreathingScreen()),
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Ejercicio de Grounding
-                ActionCard(
-                  icon: Icons.filter_center_focus_rounded,
-                  title: 'Ejercicio de conexión (Grounding 5-4-3-2-1)',
-                  description: 'Regresa al momento presente utilizando tus cinco sentidos.',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const GroundingScreen()),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Sección de Artículos
-                const SectionLabel('Lecturas psicoeducativas'),
-                const SizedBox(height: 10),
-                ActionCard(
-                  icon: Icons.article_outlined,
-                  title: 'Artículos de nuestra psicóloga',
-                  description: 'Aprende a comprender las respuestas de tu mente y cuerpo.',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ArticlesScreen()),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // 0-9 PUNTOS: Recomendación general de acudir con un psicólogo
-                if (!isCalmFocus) ...[
-                  const SectionLabel('Orientación profesional'),
-                  const SizedBox(height: 10),
-                  _PsychologistHighlightCard(
-                    isHighlighted: false,
-                    title: 'La consulta psicológica como prevención',
-                    description:
-                        'Siempre es recomendable acudir con un psicólogo, incluso en etapas tranquilas. Es un recurso clave para fortalecer tu bienestar y autoconocimiento.',
-                  ),
-                  const SizedBox(height: 24),
-                ],
-
-                // Botón destacado a Crisis
-                Material(
-                  color: const Color(0xFFFFF1EF),
-                  borderRadius: BorderRadius.circular(18),
-                  child: InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const CrisisScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const BreathingScreen(),
                     ),
-                    borderRadius: BorderRadius.circular(18),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF9DEDA),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(Icons.support_rounded, color: AppColors.alerta),
-                          ),
-                          const SizedBox(width: 14),
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '¿Necesitas ayuda inmediata?',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF7A2E2E),
-                                  ),
-                                ),
-                                SizedBox(height: 3),
-                                Text(
-                                  'Consulta números gratuitos de emergencia y apoyo en crisis 24 horas.',
-                                  style: TextStyle(
-                                    fontSize: 12.5,
-                                    color: Color(0xFF6E4A47),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.alerta),
-                        ],
+                  );
+                },
+              ),
+              const SizedBox(height: 14),
+              // Tarjeta Grounding 5-4-3-2-1
+              _RecommendationCard(
+                title: 'Grounding 5-4-3-2-1',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const GroundingScreen(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 24),
+              // Enlace Hablar con un psicólogo
+              GestureDetector(
+                onTap: () => _mostrarInfoPsicologo(context),
+                child: const Text(
+                  'Hablar con un psicólogo →',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primario,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              // Enlace centrado inferior: Ir al inicio
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const HomeScreen(),
                       ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Botón para ir al Inicio
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: () => Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const HomeScreen()),
                       (route) => false,
+                    );
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      'Ir al inicio',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primario,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
-                    child: const Text('Ir a la pantalla de inicio'),
                   ),
                 ),
-                const SizedBox(height: 14),
-                Text(
-                  'Respira ofrece orientación general y ejercicios; no sustituye la evaluación de profesionales de la salud.',
-                  style: Theme.of(context).textTheme.bodySmall,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 12),
+            ],
           ),
         ),
       ),
@@ -262,78 +193,46 @@ class RecommendationsScreen extends StatelessWidget {
   }
 }
 
-class _PsychologistHighlightCard extends StatelessWidget {
-  const _PsychologistHighlightCard({
-    required this.isHighlighted,
+class _RecommendationCard extends StatelessWidget {
+  const _RecommendationCard({
     required this.title,
-    required this.description,
+    required this.onTap,
   });
 
-  final bool isHighlighted;
   final String title;
-  final String description;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: isHighlighted ? const Color(0xFFFFF9F0) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isHighlighted ? const Color(0xFFE5B378) : const Color(0xFFE8ECE8),
-          width: isHighlighted ? 1.6 : 1,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE2E6E3)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textoPrincipal,
+            ),
+          ),
         ),
-        boxShadow: isHighlighted
-            ? [
-                BoxShadow(
-                  color: const Color(0xFFC78B43).withValues(alpha: 0.1),
-                  blurRadius: 14,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : null,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: isHighlighted ? const Color(0xFFF9E8D2) : AppColors.primarioClaro,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(
-              Icons.psychology_rounded,
-              color: isHighlighted ? const Color(0xFF99611D) : AppColors.primario,
-              size: 26,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: isHighlighted ? const Color(0xFF6E4009) : AppColors.textoPrincipal,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  description,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    height: 1.45,
-                    color: isHighlighted ? const Color(0xFF5A3911) : AppColors.textoSecundario,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

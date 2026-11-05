@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../core_theme.dart';
-import 'crisis_screen.dart';
+import '../widgets/crisis_badge_button.dart';
 
 class GroundingScreen extends StatefulWidget {
   const GroundingScreen({super.key});
@@ -33,36 +32,46 @@ class _GroundingScreenState extends State<GroundingScreen> {
     _GroundingStep(
       count: 5,
       title: '5 cosas que puedas ver',
-      instruction: 'Mira a tu alrededor con detenimiento y nombra en tu mente cinco objetos.',
-      hint: 'Puede ser un cuadro, una sombra, el color de una mesa, una planta o una luz.',
+      instruction:
+          'Mira a tu alrededor con calma y nota cinco objetos específicos en tu espacio.',
+      hint:
+          'Puede ser una planta, un patrón en la mesa, un reflejo de luz o un cuadro.',
       icon: Icons.visibility_outlined,
     ),
     _GroundingStep(
       count: 4,
       title: '4 cosas que puedas tocar',
-      instruction: 'Presta atención al contacto de cuatro texturas distintas.',
-      hint: 'La tela de tu ropa, la textura de la mesa, el suelo bajo tus pies o la temperatura del aire.',
+      instruction:
+          'Presta atención física al contacto con cuatro texturas o superficies.',
+      hint:
+          'La tela de tu ropa, la temperatura de tus manos, tus pies sobre el piso o la superficie de tu teléfono.',
       icon: Icons.touch_app_outlined,
     ),
     _GroundingStep(
       count: 3,
       title: '3 cosas que puedas escuchar',
-      instruction: 'Cierra los ojos un momento y distingue tres sonidos en el ambiente.',
-      hint: 'El sonido de un vehículo a lo lejos, el reloj, el viento o el murmullo de voces.',
+      instruction:
+          'Cierra un momento los ojos y distingue tres sonidos distintos en el ambiente.',
+      hint:
+          'El zumbido del aire, pájaros afuera, el paso de un auto o tu propia respiración.',
       icon: Icons.hearing_outlined,
     ),
     _GroundingStep(
       count: 2,
       title: '2 cosas que puedas oler',
-      instruction: 'Inhala profundamente e identifica dos aromas que te rodeen.',
-      hint: 'El aroma de una bebida, jabón, madera, papel o el fresco de una ventana abierta.',
+      instruction:
+          'Inhala con suavidad e identifica dos aromas o sensaciones olfativas presentes.',
+      hint:
+          'El aroma de café, jabón, madera, lluvia o el aire fresco de una ventana.',
       icon: Icons.air_outlined,
     ),
     _GroundingStep(
       count: 1,
-      title: '1 sensación o gratitud',
-      instruction: 'Nota una sensación positiva en tu cuerpo o algo que agradezcas hoy.',
-      hint: 'La sensación de tus pies apoyados firmemente, el calor en tus manos o haberte regalado esta pausa.',
+      title: '1 sensación de gratitud o calma',
+      instruction:
+          'Nota una sensación de bienestar en tu cuerpo o algo que agradezcas en este momento.',
+      hint:
+          'El calor de un respiro profundo, estar a salvo o haberte regalado esta pausa.',
       icon: Icons.favorite_outline_rounded,
     ),
   ];
@@ -78,24 +87,38 @@ class _GroundingScreenState extends State<GroundingScreen> {
   void _prev() {
     if (_currentStep > 0) {
       setState(() => _currentStep--);
+    } else {
+      Navigator.pop(context);
     }
   }
 
   void _showCompletionDialog() {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-        title: const Text('¡Bien hecho!'),
+        title: const Text(
+          '¡Bien hecho!',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: AppColors.textoPrincipal,
+          ),
+        ),
         content: const Text(
-          'Completaste el ejercicio de conexión al presente (Grounding 5-4-3-2-1). Tómate un momento para notar cómo te sientes ahora.',
+          'Completaste el ejercicio de conexión Grounding 5-4-3-2-1. Tómate un momento para notar cómo se siente tu cuerpo ahora.',
+          style: TextStyle(fontSize: 15, color: AppColors.textoSecundario),
         ),
         actions: [
-          FilledButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
               Navigator.pop(context);
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primario,
+              shape: const StadiumBorder(),
+            ),
             child: const Text('Finalizar'),
           ),
         ],
@@ -109,146 +132,156 @@ class _GroundingScreenState extends State<GroundingScreen> {
     final progress = (_currentStep + 1) / _steps.length;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ejercicio de conexión (Grounding)'),
-        actions: [
-          IconButton(
-            tooltip: 'Necesito ayuda ahora',
-            icon: const Icon(Icons.support_rounded, color: AppColors.alerta),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CrisisScreen()),
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.fondo,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 540),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Paso ${_currentStep + 1} de ${_steps.length}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primario,
-                        ),
-                      ),
-                      Text(
-                        'Técnica 5-4-3-2-1',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: LinearProgressIndicator(
-                      value: progress,
-                      minHeight: 7,
-                      backgroundColor: const Color(0xFFE4EEE7),
-                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primario),
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: AppColors.textoPrincipal,
+                      size: 22,
                     ),
+                    onPressed: _prev,
                   ),
-                  const Spacer(),
-                  Center(
-                    child: Container(
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
-                        color: AppColors.primarioClaro,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        step.icon,
-                        color: AppColors.primario,
-                        size: 46,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  Text(
-                    step.title,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    step.instruction,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: const Color(0xFFE8ECE8)),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.lightbulb_outline_rounded,
-                          color: AppColors.primario,
-                          size: 22,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            step.hint,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Spacer(),
-                  Row(
-                    children: [
-                      if (_currentStep > 0) ...[
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            onPressed: _prev,
-                            child: const Text('Anterior'),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                      ],
-                      Expanded(
-                        flex: 2,
-                        child: FilledButton(
-                          onPressed: _next,
-                          child: Text(
-                            _currentStep == _steps.length - 1
-                                ? 'Finalizar ejercicio'
-                                : 'Siguiente paso',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Salir del ejercicio'),
-                  ),
+                  const CrisisBadgeButton(),
                 ],
               ),
-            ),
+              const SizedBox(height: 20),
+              Text(
+                'Paso ${_currentStep + 1} de ${_steps.length}',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textoSecundario,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 4,
+                  backgroundColor: const Color(0xFFDCE7E2),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppColors.primario,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
+              const Text(
+                'Grounding 5-4-3-2-1',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFE2E6E3)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.02),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: AppColors.primarioClaro,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          step.icon,
+                          size: 36,
+                          color: AppColors.primario,
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                      Text(
+                        step.title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textoPrincipal,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        step.instruction,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 15.5,
+                          height: 1.45,
+                          color: AppColors.textoPrincipal,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        step.hint,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 13.5,
+                          color: AppColors.textoSecundario,
+                          fontStyle: FontStyle.italic,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: _next,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primario,
+                    foregroundColor: Colors.white,
+                    shape: const StadiumBorder(),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    _currentStep == _steps.length - 1
+                        ? 'Finalizar'
+                        : 'Siguiente',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
           ),
         ),
       ),
     );
   }
 }
-
