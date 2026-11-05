@@ -85,9 +85,8 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
   }
 
   void _onNext() {
-    // Si no ha seleccionado ninguna opción aún, por defecto consideramos la primera ("Nunca")
     if (!_answers.containsKey(_currentIndex)) {
-      _answers[_currentIndex] = 0;
+      return;
     }
 
     if (_currentIndex < _questions.length - 1) {
@@ -300,7 +299,7 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: _onNext,
+                  onPressed: selectedOption == null ? null : _onNext,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primario,
                     foregroundColor: Colors.white,
