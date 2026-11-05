@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../core_theme.dart';
 import '../widgets/crisis_badge_button.dart';
 import 'crisis_screen.dart';
@@ -37,7 +38,8 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
   static const _questions = <_WellbeingQuestion>[
     _WellbeingQuestion(
       number: 1,
-      question: '¿Te has sentido inquieto/a, tenso/a o con los nervios de punta?',
+      question:
+          '¿Te has sentido inquieto/a, tenso/a o con los nervios de punta?',
       isSafetyQuestion: false,
     ),
     _WellbeingQuestion(
@@ -47,7 +49,8 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
     ),
     _WellbeingQuestion(
       number: 3,
-      question: '¿Has sentido que te preocupas de más por muchas cosas distintas?',
+      question:
+          '¿Has sentido que te preocupas de más por muchas cosas distintas?',
       isSafetyQuestion: false,
     ),
     _WellbeingQuestion(
@@ -57,7 +60,8 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
     ),
     _WellbeingQuestion(
       number: 5,
-      question: '¿Te has sentido tan inquieto/a que te cuesta quedarte quieto/a?',
+      question:
+          '¿Te has sentido tan inquieto/a que te cuesta quedarte quieto/a?',
       isSafetyQuestion: false,
     ),
     _WellbeingQuestion(
@@ -72,8 +76,7 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
     ),
     _WellbeingQuestion(
       number: 8,
-      question:
-          '¿Has tenido pensamientos de que estarías mejor muerto/a o de hacerte daño de alguna manera?',
+      question: '¿Has tenido pensamientos de que estarías mejor muerto/a o de hacerte daño de alguna manera?',
       isSafetyQuestion: true,
     ),
   ];
@@ -85,9 +88,16 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
   }
 
   void _onNext() {
-    // Si no ha seleccionado ninguna opción aún, por defecto consideramos la primera ("Nunca")
     if (!_answers.containsKey(_currentIndex)) {
-      _answers[_currentIndex] = 0;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('Selecciona una opción para continuar.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      return;
     }
 
     if (_currentIndex < _questions.length - 1) {
@@ -309,10 +319,7 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
                   ),
                   child: const Text(
                     'Siguiente',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
