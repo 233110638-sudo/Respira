@@ -36,6 +36,11 @@ void main() {
     expect(find.text('1 de 8 · últimas 2 semanas'), findsOneWidget);
     expect(find.text('Necesito ayuda ahora'), findsOneWidget);
 
+    // No se puede avanzar sin seleccionar una respuesta.
+    await tester.tap(find.text('Siguiente'));
+    await tester.pumpAndSettle();
+    expect(find.text('1 de 8 · últimas 2 semanas'), findsOneWidget);
+
     // Responder preguntas 1 a 7 con "Algunos días"
     for (var i = 1; i <= 7; i++) {
       expect(find.text('$i de 8 · últimas 2 semanas'), findsOneWidget);
