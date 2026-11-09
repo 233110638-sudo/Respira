@@ -70,9 +70,12 @@ void main() {
 
     // 5. Necesito ayuda ahora (05 · Necesito ayuda ahora)
     expect(find.text('Gracias por contarnos'), findsOneWidget);
-    expect(find.text('Llamar a la Línea de la Vida'), findsOneWidget);
+    expect(
+      find.text('Copiar número para llamar a la Línea de la Vida'),
+      findsOneWidget,
+    );
     expect(find.text('800 911 2000 · gratis, 24 horas'), findsOneWidget);
-    expect(find.text('Llamar al 911'), findsOneWidget);
+    expect(find.text('Copiar número para llamar al 911'), findsOneWidget);
     expect(find.text('Escribirle a alguien de confianza'), findsOneWidget);
     expect(find.text('Ya estoy mejor, volver'), findsOneWidget);
   });
@@ -110,6 +113,9 @@ void main() {
 
     // Debe mostrar directamente la pantalla de crisis
     expect(find.text('Gracias por contarnos'), findsOneWidget);
-    expect(find.text('Llamar a la Línea de la Vida'), findsOneWidget);
+    expect(
+      find.text('Copiar número para llamar a la Línea de la Vida'),
+      findsOneWidget,
+    );
   });
 }
