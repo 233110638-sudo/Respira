@@ -1,7 +1,10 @@
+
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Paleta principal inspirada en los nuevos diseños de Respira
+  // Paleta de colores principal de Respira.
+  // Colores organizados para mantener una interfaz uniforme
+  // en las diferentes pantallas de la aplicación.
   static const Color primario = Color(0xFF2D6A64); // Verde pino oscuro / teal
   static const Color primarioOscuro = Color(0xFF245550);
   static const Color primarioClaro = Color(0xFFE6EFEA); // Mint suave para selecciones y tabs
