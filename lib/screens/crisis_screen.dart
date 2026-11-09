@@ -175,7 +175,7 @@ class CrisisScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Llamar a la Línea de la Vida',
+                          'Copiar número para llamar a la Línea de la Vida',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 17,
@@ -198,7 +198,7 @@ class CrisisScreen extends StatelessWidget {
               ),
               const SizedBox(height: 14),
 
-              // Tarjeta 2: Llamar al 911 (Borde rojo)
+              // Tarjeta 2: Copiar número para llamar al 911 (Borde rojo)
               Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -223,7 +223,7 @@ class CrisisScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Llamar al 911',
+                          'Copiar número para llamar al 911',
                           style: TextStyle(
                             color: AppColors.alerta,
                             fontSize: 17,
