@@ -34,6 +34,16 @@ class WelcomeScreen extends StatelessWidget {
                   letterSpacing: -0.5,
                 ),
               ),
+              const SizedBox(height: 10),
+              const Text(
+                'Pequeños pasos para los días en que el ánimo pesa.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textoSecundario,
+                  height: 1.4,
+                ),
+              ),
               const Spacer(flex: 3),
               // Botón Comenzar
               SizedBox(

@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../core_theme.dart';
+import '../data/respira_store.dart';
+import '../data/small_steps.dart';
+import '../widgets/action_card.dart';
+import '../widgets/mood_check_in.dart';
+import '../widgets/psychologist_card.dart';
+import 'activation_screen.dart';
 import 'articles_screen.dart';
 import 'breathing_screen.dart';
 import 'crisis_screen.dart';
-import 'grounding_screen.dart';
+import 'gratitude_screen.dart';
 import 'support_someone_screen.dart';
 import 'wellbeing_check_screen.dart';
 
@@ -17,95 +25,31 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedTabIndex = 0;
 
-  void _mostrarInfoPsicologo() {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Hablar con un psicólogo',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textoPrincipal,
-                ),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'La consulta con un profesional de la salud mental te brinda un espacio seguro, confidencial y sin juicios para entender tus emociones y adquirir herramientas personalizadas.',
-                style: TextStyle(
-                  fontSize: 15,
-                  height: 1.45,
-                  color: AppColors.textoSecundario,
-                ),
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                'Si requieres orientación inmediata y gratuita las 24 horas, la Línea de la Vida (800 911 2000) cuenta con psicólogos capacitados listos para escucharte.',
-                style: TextStyle(
-                  fontSize: 14,
-                  height: 1.45,
-                  color: AppColors.textoSecundario,
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const CrisisScreen()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.alerta,
-                    foregroundColor: Colors.white,
-                    shape: const StadiumBorder(),
-                  ),
-                  child: const Text('Ver líneas de ayuda disponibles'),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+  String get _saludo {
+    final hora = DateTime.now().hour;
+    if (hora < 12) return 'Buenos días';
+    if (hora < 19) return 'Buenas tardes';
+    return 'Buenas noches';
   }
 
   Widget _buildHomeTabContent() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 16),
-          // Título de bienvenida
+          const SizedBox(height: 12),
+          Text(
+            _saludo,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textoSecundario,
+            ),
+          ),
+          const SizedBox(height: 4),
           const Text(
-            '¿Cómo quieres cuidarte\nhoy?',
+            'Un paso a la vez',
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w800,
@@ -114,11 +58,15 @@ class _HomeScreenState extends State<HomeScreen> {
               letterSpacing: -0.5,
             ),
           ),
-          const SizedBox(height: 28),
-
-          // Tarjeta 1: Repetir chequeo de bienestar
+          const SizedBox(height: 20),
+          const MoodCheckIn(),
+          const SizedBox(height: 14),
+          const PsychologistCard(),
+          const SizedBox(height: 14),
+          const _TodayStepCard(),
+          const SizedBox(height: 14),
           _HomeActionCard(
-            title: 'Repetir chequeo de bienestar',
+            title: 'Hacer el chequeo de bienestar',
             onTap: () {
               Navigator.push(
                 context,
@@ -128,27 +76,20 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-          const SizedBox(height: 14),
-
-          // Tarjeta 2: Hablar con un psicólogo
-          _HomeActionCard(
-            title: 'Hablar con un psicólogo',
-            onTap: _mostrarInfoPsicologo,
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildExercisesTabContent() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+  Widget _buildToolsTabContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 16),
           const Text(
-            'Ejercicios guiados',
+            'Herramientas',
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w800,
@@ -158,29 +99,43 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Pausas conscientes para regular tu sistema nervioso y conectar con el presente.',
+            'Actividades cortas para los días en que el ánimo pesa.',
             style: TextStyle(fontSize: 15, color: AppColors.textoSecundario),
           ),
           const SizedBox(height: 24),
-          _HomeActionCard(
-            title: 'Respiración 4-7-8',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const BreathingScreen()),
-              );
-            },
+          ActionCard(
+            icon: Icons.directions_walk_rounded,
+            title: 'Pequeños pasos',
+            description: 'Marca actividades de pocos minutos y ve tu avance.',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ActivationScreen()),
+            ),
           ),
           const SizedBox(height: 14),
-          _HomeActionCard(
-            title: 'Grounding 5-4-3-2-1',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const GroundingScreen()),
-              );
-            },
+          ActionCard(
+            icon: Icons.star_rounded,
+            iconColor: AppColors.calido,
+            iconBackground: AppColors.calidoFondo,
+            title: 'Tres cosas buenas',
+            description: 'Escribe tres momentos sencillos que valieron la pena.',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const GratitudeScreen()),
+            ),
           ),
+          const SizedBox(height: 14),
+          ActionCard(
+            icon: Icons.air_rounded,
+            title: 'Respiración 4-7-8',
+            description: 'Una pausa guiada para bajar el ritmo y enfocarte.',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BreathingScreen()),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const PsychologistCard(),
         ],
       ),
     );
@@ -199,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 index: _selectedTabIndex,
                 children: [
                   _buildHomeTabContent(),
-                  _buildExercisesTabContent(),
+                  _buildToolsTabContent(),
                   const ArticlesScreen(isEmbedded: true),
                   const SupportSomeoneScreen(isEmbedded: true),
                 ],
@@ -280,12 +235,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             _buildNavTabItem(
               index: 1,
-              label: 'Ejercicios',
+              label: 'Herramientas',
               icon: Icons.spa_rounded,
             ),
             _buildNavTabItem(
               index: 2,
-              label: 'Artículos',
+              label: 'Lecturas',
               icon: Icons.article_rounded,
             ),
             _buildNavTabItem(
@@ -394,6 +349,86 @@ class _HomeActionCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Sugiere un paso pequeño distinto cada día.
+class _TodayStepCard extends StatelessWidget {
+  const _TodayStepCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final store = context.watch<RespiraStore>();
+    final steps = allSmallSteps;
+    final step = steps[DateTime.now().day % steps.length];
+    final done = store.isStepDone(step.id);
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: done ? const Color(0xFFE8F1EC) : AppColors.calidoFondo,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                done ? Icons.emoji_events_rounded : Icons.flag_rounded,
+                color: done ? AppColors.primario : AppColors.calido,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                done ? '¡Paso de hoy completado!' : 'Tu paso de hoy',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textoPrincipal,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            step.text,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textoPrincipal,
+              height: 1.3,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              ElevatedButton.icon(
+                onPressed: () => store.toggleStep(step.id),
+                icon: Icon(done ? Icons.undo_rounded : Icons.check_rounded, size: 18),
+                label: Text(done ? 'Deshacer' : 'Lo hice'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: done ? Colors.white : AppColors.calido,
+                  foregroundColor: done ? AppColors.textoPrincipal : Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                  textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+              ),
+              const SizedBox(width: 10),
+              TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ActivationScreen()),
+                ),
+                child: const Text('Ver más pasos'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

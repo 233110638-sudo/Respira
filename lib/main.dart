@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'core_theme.dart';
+import 'data/respira_store.dart';
 import 'splash_screen.dart';
 
 void main() {
@@ -13,11 +15,14 @@ class RespiraApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Respira',
-      debugShowCheckedModeBanner: false,
-      theme: buildRespiraTheme(),
-      home: const SplashScreen(),
+    return ChangeNotifierProvider(
+      create: (_) => RespiraStore(),
+      child: MaterialApp(
+        title: 'Respira',
+        debugShowCheckedModeBanner: false,
+        theme: buildRespiraTheme(),
+        home: const SplashScreen(),
+      ),
     );
   }
 }

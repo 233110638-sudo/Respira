@@ -30,37 +30,47 @@ class _SupportSomeoneScreenState extends State<SupportSomeoneScreen> {
     _SupportAccordionItem(
       title: 'Señales a las que poner atención',
       content: [
-        '• Cambios notorios y repentinos en el estado de ánimo o energía.',
-        '• Aislamiento social o desconexión de actividades que antes disfrutaba.',
-        '• Frases directas o indirectas de desesperanza (“ya nada tiene sentido”, “sería mejor si no estuviera”).',
-        '• Descuido marcado del autocuidado, sueño o alimentación.',
+        '• Se le ve triste, apagado/a o sin energía la mayor parte del tiempo.',
+        '• Dejó de hacer cosas que antes disfrutaba o se aleja de amigos y familia.',
+        '• Cambios notorios en su sueño, su apetito o su cuidado personal.',
+        '• Frases de desesperanza o de ser una carga (“ya nada tiene sentido”, “estarían mejor sin mí”).',
+        '• Estas señales no son un diagnóstico: son motivos para acercarte y sugerir ayuda profesional.',
       ],
     ),
     _SupportAccordionItem(
       title: 'Cómo iniciar la conversación',
       content: [
-        '• Elige un momento privado, tranquilo y sin prisas.',
-        '• Pregunta desde la empatía genuina: “He notado que has estado callado/a últimamente, ¿cómo te has sentido de verdad?”.',
-        '• Escucha más de lo que hablas. No intentes resolver su vida en una sola charla.',
-        '• Valida sus sentimientos: “Entiendo que te sientas abrumado/a, gracias por compartirlo conmigo”.',
+        '• Busca un momento privado y sin prisas.',
+        '• Habla de lo que has notado, sin juzgar: “Te he visto más callado/a últimamente, ¿cómo estás de verdad?”.',
+        '• Escucha más de lo que hablas. No necesitas tener todas las respuestas.',
+        '• Valida lo que siente: “Gracias por contármelo, se oye muy pesado”.',
       ],
     ),
     _SupportAccordionItem(
       title: 'Qué frases evitar',
       content: [
-        '• Evita frases invalidantes como: “No te preocupes, hay gente peor que tú” o “Échale ganas”.',
-        '• Evita minimizar su dolor: “Eso no es para tanto” o “Es una tontería”.',
-        '• Evita sermonear o centrar la plática en tus propias experiencias.',
-        '• Recuerda que acompañar no es dar lecciones morales, sino estar presente.',
+        '• “Échale ganas” o “ponle actitud”: el ánimo bajo no se quita con fuerza de voluntad.',
+        '• “Hay gente que está peor”: minimiza lo que siente.',
+        '• “Eso es pura flojera”: puede hacer que se cierre más.',
+        '• Acompañar no es dar sermones, sino estar presente.',
+      ],
+    ),
+    _SupportAccordionItem(
+      title: 'Cómo ayudar en el día a día',
+      content: [
+        '• Invítale a actividades sencillas: caminar, comer juntos o ver una serie.',
+        '• Ofrece ayuda concreta con algo pendiente, como un trámite o una tarea.',
+        '• Sigue en contacto aunque no siempre conteste; un mensaje corto también acompaña.',
+        '• Cuídate tú también: acompañar puede cansar.',
       ],
     ),
     _SupportAccordionItem(
       title: 'A dónde canalizar',
       content: [
-        '• Invita a buscar apoyo psicológico profesional sin presionar ni juzgar.',
-        '• Ofrece ayuda práctica: “¿Te gustaría que busquemos juntos un especialista o te acompañe a la sala de espera?”.',
-        '• Comparte números de atención gratuita como la Línea de la Vida (800 911 2000).',
-        '• Si hay riesgo inminente, llama al 911 y no lo dejes solo/a.',
+        '• Recomiéndale siempre acudir con un psicólogo, sin presionar ni juzgar.',
+        '• Ofrece buscar juntos un especialista o acompañarle a su primera cita.',
+        '• Comparte la Línea de la Vida (800 911 2000): gratis y 24 horas.',
+        '• Si habla de quitarse la vida o hay riesgo inmediato, llama al 911 y no lo/la dejes solo/a.',
       ],
     ),
   ];

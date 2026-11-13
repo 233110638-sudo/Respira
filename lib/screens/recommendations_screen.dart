@@ -1,192 +1,208 @@
 import 'package:flutter/material.dart';
+
 import '../core_theme.dart';
+import '../data/check_area.dart';
 import '../widgets/crisis_badge_button.dart';
+import '../widgets/lifeline_card.dart';
+import '../widgets/psychologist_card.dart';
+import 'activation_screen.dart';
+import 'articles_screen.dart';
 import 'breathing_screen.dart';
-import 'grounding_screen.dart';
+import 'gratitude_screen.dart';
 import 'home_screen.dart';
 
-enum WellbeingResultType {
-  calmAndPsychologist, // Puntuación que sugiere calma y apoyo
-  wellnessAndArticles, // Puntuación de bienestar general
+class _Suggestion {
+  const _Suggestion({
+    required this.key,
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.builder,
+  });
+
+  final String key;
+  final String title;
+  final String description;
+  final IconData icon;
+  final WidgetBuilder builder;
 }
 
+/// Sugerencias después del chequeo.
+/// Nunca muestra puntajes ni etiquetas: solo ideas de cuidado y,
+/// siempre, la recomendación de acudir con un psicólogo.
 class RecommendationsScreen extends StatelessWidget {
   const RecommendationsScreen({
-    this.resultType = WellbeingResultType.wellnessAndArticles,
+    this.focusAreas = const [],
+    this.safetyConcern = false,
     super.key,
   });
 
-  final WellbeingResultType resultType;
+  final List<CheckArea> focusAreas;
+  final bool safetyConcern;
 
-  void _mostrarInfoPsicologo(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Hablar con un psicólogo',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textoPrincipal,
-                ),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'La consulta con un profesional de la salud mental te brinda un espacio seguro, confidencial y sin juicios para entender tus emociones y adquirir herramientas personalizadas.',
-                style: TextStyle(
-                  fontSize: 15,
-                  height: 1.45,
-                  color: AppColors.textoSecundario,
-                ),
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                'Acudir a terapia no significa que algo esté mal en ti; es una decisión informada de autocuidado y prevención.',
-                style: TextStyle(
-                  fontSize: 14,
-                  height: 1.45,
-                  color: AppColors.textoSecundario,
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primario,
-                    shape: const StadiumBorder(),
-                  ),
-                  child: const Text('Cerrar'),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+  static final _pasos = _Suggestion(
+    key: 'pasos',
+    title: 'Pequeños pasos',
+    description: 'Actividades de pocos minutos para mover el ánimo.',
+    icon: Icons.directions_walk_rounded,
+    builder: (_) => const ActivationScreen(),
+  );
+
+  static final _gratitud = _Suggestion(
+    key: 'gratitud',
+    title: 'Tres cosas buenas',
+    description: 'Escribe tres momentos sencillos que valieron la pena.',
+    icon: Icons.star_rounded,
+    builder: (_) => const GratitudeScreen(),
+  );
+
+  static final _respiracion = _Suggestion(
+    key: 'respiracion',
+    title: 'Respiración 4-7-8',
+    description: 'Una pausa breve para bajar el ritmo y enfocarte.',
+    icon: Icons.air_rounded,
+    builder: (_) => const BreathingScreen(),
+  );
+
+  static _Suggestion _articulo(String id, IconData icon) {
+    final article = articleById(id);
+    return _Suggestion(
+      key: 'articulo_$id',
+      title: article.title,
+      description: article.subtitle,
+      icon: icon,
+      builder: (_) => ArticleDetailScreen(article: article),
     );
+  }
+
+  List<_Suggestion> _buildSuggestions() {
+    final suggestions = <_Suggestion>[];
+
+    void add(_Suggestion s) {
+      if (!suggestions.any((item) => item.key == s.key)) suggestions.add(s);
+    }
+
+    for (final area in focusAreas) {
+      switch (area) {
+        case CheckArea.interes:
+        case CheckArea.energia:
+          add(_pasos);
+          break;
+        case CheckArea.animo:
+          add(_gratitud);
+          add(_pasos);
+          break;
+        case CheckArea.autoestima:
+          add(_articulo('amabilidad', Icons.favorite_rounded));
+          add(_gratitud);
+          break;
+        case CheckArea.descanso:
+        case CheckArea.alimentacion:
+          add(_articulo('rutina', Icons.bedtime_rounded));
+          break;
+        case CheckArea.concentracion:
+          add(_respiracion);
+          break;
+        case CheckArea.conexion:
+          add(_articulo('conexion', Icons.groups_rounded));
+          break;
+        case CheckArea.seguridad:
+          break;
+      }
+    }
+
+    // Sugerencias generales para completar la lista.
+    add(_pasos);
+    add(_gratitud);
+    add(_respiracion);
+
+    return suggestions.take(4).toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final suggestions = _buildSuggestions();
+
     return Scaffold(
       backgroundColor: AppColors.fondo,
       body: SafeArea(
-        child: Padding(
+        child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Barra superior: botón "Necesito ayuda ahora" a la derecha
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  CrisisBadgeButton(),
-                ],
+          children: [
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [CrisisBadgeButton()],
+            ),
+            const SizedBox(height: 22),
+            const Text(
+              'Esto es para ti',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textoPrincipal,
+                letterSpacing: -0.5,
               ),
-              const SizedBox(height: 24),
-              // Título
-              const Text(
-                'Esto es para ti',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textoPrincipal,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Tarjeta Respiración 4-7-8
-              _RecommendationCard(
-                title: 'Respiración 4-7-8',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const BreathingScreen(),
-                    ),
-                  );
-                },
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Gracias por tomarte este tiempo. Esto no es un diagnóstico: son ideas para cuidarte mientras buscas apoyo.',
+              style: TextStyle(fontSize: 15, height: 1.4, color: AppColors.textoSecundario),
+            ),
+            const SizedBox(height: 22),
+            if (safetyConcern) ...[
+              const LifelineCard(
+                message:
+                    'Lo que compartiste es importante. Llama ahora: te escuchan sin juzgarte.',
               ),
               const SizedBox(height: 14),
-              // Tarjeta Grounding 5-4-3-2-1
+            ],
+            // Recomendación obligatoria, sin importar las respuestas
+            const PsychologistCard(),
+            const SizedBox(height: 26),
+            const Text(
+              'Ideas para empezar',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textoPrincipal,
+              ),
+            ),
+            const SizedBox(height: 12),
+            for (final s in suggestions) ...[
               _RecommendationCard(
-                title: 'Grounding 5-4-3-2-1',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const GroundingScreen(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              // Enlace Hablar con un psicólogo
-              GestureDetector(
-                onTap: () => _mostrarInfoPsicologo(context),
-                child: const Text(
-                  'Hablar con un psicólogo →',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primario,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              // Enlace centrado inferior: Ir al inicio
-              Center(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const HomeScreen(),
-                      ),
-                      (route) => false,
-                    );
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text(
-                      'Ir al inicio',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.primario,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
+                suggestion: s,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: s.builder),
                 ),
               ),
               const SizedBox(height: 12),
             ],
-          ),
+            const SizedBox(height: 16),
+            Center(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HomeScreen()),
+                    (route) => false,
+                  );
+                },
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    'Ir al inicio',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primario,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -194,12 +210,9 @@ class RecommendationsScreen extends StatelessWidget {
 }
 
 class _RecommendationCard extends StatelessWidget {
-  const _RecommendationCard({
-    required this.title,
-    required this.onTap,
-  });
+  const _RecommendationCard({required this.suggestion, required this.onTap});
 
-  final String title;
+  final _Suggestion suggestion;
   final VoidCallback onTap;
 
   @override
@@ -211,26 +224,50 @@ class _RecommendationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFFE2E6E3)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.02),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textoPrincipal,
-            ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.primarioClaro,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(suggestion.icon, color: AppColors.primario),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      suggestion.title,
+                      style: const TextStyle(
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textoPrincipal,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      suggestion.description,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        height: 1.35,
+                        color: AppColors.textoSecundario,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded, color: AppColors.textoSecundario),
+            ],
           ),
         ),
       ),
