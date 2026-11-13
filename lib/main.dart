@@ -28,7 +28,7 @@ class RespiraApp extends StatelessWidget {
           color: const Color(0xFFE9EEEB),
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 560),
+              constraints: const BoxConstraints(maxWidth: 760),
               child: Material(
                 elevation: 2,
                 color: AppColors.fondo,
