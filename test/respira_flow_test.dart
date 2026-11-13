@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:respira/core_theme.dart';
 import 'package:respira/data/respira_store.dart';
 import 'package:respira/screens/welcome_screen.dart';
+import 'package:respira/widgets/calm_scene.dart';
 
 Widget _app() {
   return ChangeNotifierProvider(
@@ -13,6 +14,11 @@ Widget _app() {
 }
 
 Future<void> _llegarAlChequeo(WidgetTester tester) async {
+  // Pantalla grande para que todas las opciones quepan sin desplazarse.
+  tester.view.physicalSize = const Size(1200, 2000);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.reset);
+
   await tester.pumpWidget(_app());
 
   expect(find.text('Respira'), findsOneWidget);
@@ -35,6 +41,10 @@ Future<void> _responder(WidgetTester tester, String opcion, String boton) async 
 }
 
 void main() {
+  // Los paisajes animados se detienen en las pruebas para que
+  // pumpAndSettle no espere una animación infinita.
+  setUp(() => CalmScene.animate = false);
+
   testWidgets('el chequeo termina en sugerencias con la recomendación del psicólogo', (
     tester,
   ) async {

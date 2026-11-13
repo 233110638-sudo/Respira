@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../core_theme.dart';
 import '../data/respira_store.dart';
+import '../widgets/calm_scene.dart';
 import '../widgets/crisis_badge_button.dart';
 
 class _GratitudeStep {
@@ -217,7 +218,11 @@ class _GratitudeScreenState extends State<GratitudeScreen> {
               const SizedBox(height: 18),
               Expanded(
                 child: SingleChildScrollView(
-                  child: Container(
+                  child: Column(
+                    children: [
+                      const CalmScene(height: 110, mood: SceneMood.atardecer),
+                      const SizedBox(height: 16),
+                      Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(22),
                     decoration: BoxDecoration(
@@ -272,6 +277,8 @@ class _GratitudeScreenState extends State<GratitudeScreen> {
                         ),
                       ],
                     ),
+                  ),
+                    ],
                   ),
                 ),
               ),

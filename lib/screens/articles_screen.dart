@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core_theme.dart';
+import '../widgets/calm_scene.dart';
 import '../widgets/crisis_badge_button.dart';
 import '../widgets/psychologist_card.dart';
 
@@ -138,7 +139,9 @@ class ArticlesScreen extends StatelessWidget {
                 'Lecturas breves para entender lo que sientes y cuidarte en los días difíciles.',
                 style: TextStyle(fontSize: 15, color: AppColors.textoSecundario),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
+              const CalmScene(height: 130, mood: SceneMood.dia),
+              const SizedBox(height: 20),
               for (final article in articlesList) ...[
                 _ArticleCard(article: article),
                 const SizedBox(height: 14),
@@ -263,7 +266,12 @@ class ArticleDetailScreen extends StatelessWidget {
                   const CrisisBadgeButton(),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
+              CalmScene(
+                height: 150,
+                mood: SceneMood.values[articlesList.indexOf(article) % 3],
+              ),
+              const SizedBox(height: 20),
               Text(
                 article.readingTime,
                 style: const TextStyle(

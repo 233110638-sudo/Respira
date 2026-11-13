@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core_theme.dart';
+import '../widgets/calm_scene.dart';
 import '../widgets/respira_waves.dart';
 import 'wellbeing_check_screen.dart';
 
@@ -126,47 +127,44 @@ class _ConsentScreenState extends State<ConsentScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Tarjeta de bienvenida
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(22),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.primario, AppColors.primarioOscuro],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: const Column(
-                          children: [
-                            RespiraWaves(
-                              width: 54,
-                              height: 34,
-                              color: Colors.white,
-                              strokeWidth: 3.0,
-                            ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Antes de empezar',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w800,
+                      const CalmScene(
+                        height: 230,
+                        mood: SceneMood.amanecer,
+                        scrim: true,
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              RespiraWaves(
+                                width: 48,
+                                height: 30,
                                 color: Colors.white,
-                                letterSpacing: -0.5,
+                                strokeWidth: 3.0,
                               ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Respira es un espacio para acompañarte en los días en que el ánimo pesa. Esto es lo que debes saber:',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14.5,
-                                height: 1.4,
-                                color: Color(0xFFE3EEEA),
+                              SizedBox(height: 12),
+                              Text(
+                                'Antes de empezar',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  letterSpacing: -0.5,
+                                ),
                               ),
-                            ),
-                          ],
+                              SizedBox(height: 6),
+                              Text(
+                                'Respira es un espacio para acompañarte en los días en que el ánimo pesa. Esto es lo que debes saber:',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  height: 1.4,
+                                  color: Color(0xFFF1F5F3),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(height: 18),

@@ -5,6 +5,7 @@ import '../core_theme.dart';
 import '../data/respira_store.dart';
 import '../data/small_steps.dart';
 import '../widgets/action_card.dart';
+import '../widgets/calm_scene.dart';
 import '../widgets/mood_check_in.dart';
 import '../widgets/psychologist_card.dart';
 import 'activation_screen.dart';
@@ -38,27 +39,41 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 12),
-          Text(
-            _saludo,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textoSecundario,
+          const SizedBox(height: 8),
+          // Paisaje según la hora del día, con el saludo encima
+          CalmScene(
+            height: 180,
+            mood: CalmScene.moodForNow(),
+            scrim: true,
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _saludo,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFFE8F1EC),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  const Text(
+                    'Un paso a la vez',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 4),
-          const Text(
-            'Un paso a la vez',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textoPrincipal,
-              height: 1.22,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           const MoodCheckIn(),
           const SizedBox(height: 14),
           const PsychologistCard(),
@@ -102,7 +117,9 @@ class _HomeScreenState extends State<HomeScreen> {
             'Actividades cortas para los días en que el ánimo pesa.',
             style: TextStyle(fontSize: 15, color: AppColors.textoSecundario),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
+          const CalmScene(height: 130, mood: SceneMood.amanecer),
+          const SizedBox(height: 20),
           ActionCard(
             icon: Icons.directions_walk_rounded,
             title: 'Pequeños pasos',

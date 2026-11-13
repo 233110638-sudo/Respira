@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core_theme.dart';
+import '../widgets/calm_scene.dart';
 import '../widgets/crisis_badge_button.dart';
 import 'crisis_screen.dart';
 
@@ -117,7 +118,14 @@ class _SupportSomeoneScreenState extends State<SupportSomeoneScreen> {
                   letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 8),
+              const Text(
+                'Tu compañía puede hacer una gran diferencia para alguien que pasa por días difíciles.',
+                style: TextStyle(fontSize: 15, height: 1.4, color: AppColors.textoSecundario),
+              ),
+              const SizedBox(height: 20),
+              const CalmScene(height: 130, mood: SceneMood.atardecer),
+              const SizedBox(height: 20),
 
               // Lista tipo acordeón
               for (int i = 0; i < _items.length; i++) ...[

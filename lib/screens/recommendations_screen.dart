@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core_theme.dart';
 import '../data/check_area.dart';
+import '../widgets/calm_scene.dart';
 import '../widgets/crisis_badge_button.dart';
 import '../widgets/lifeline_card.dart';
 import '../widgets/psychologist_card.dart';
@@ -135,37 +136,33 @@ class RecommendationsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 22),
             // Encabezado en tarjeta
-            Container(
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.primario, AppColors.primarioOscuro],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: const Column(
-                children: [
-                  Icon(Icons.spa_rounded, color: Colors.white, size: 36),
-                  SizedBox(height: 12),
-                  Text(
-                    'Esto es para ti',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                      letterSpacing: -0.5,
+            CalmScene(
+              height: 210,
+              mood: safetyConcern ? SceneMood.amanecer : SceneMood.atardecer,
+              scrim: true,
+              child: const Align(
+                alignment: Alignment.bottomCenter,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Esto es para ti',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Gracias por tomarte este tiempo. Esto no es un diagnóstico: son ideas para cuidarte mientras buscas apoyo.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14.5, height: 1.4, color: Color(0xFFE3EEEA)),
-                  ),
-                ],
+                    SizedBox(height: 6),
+                    Text(
+                      'Gracias por tomarte este tiempo. Esto no es un diagnóstico: son ideas para cuidarte mientras buscas apoyo.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 14, height: 1.4, color: Color(0xFFF1F5F3)),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 22),

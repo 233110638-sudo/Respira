@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core_theme.dart';
+import '../widgets/calm_scene.dart';
 import '../widgets/respira_waves.dart';
 import 'consent_screen.dart';
 
@@ -44,6 +45,8 @@ class WelcomeScreen extends StatelessWidget {
                   height: 1.4,
                 ),
               ),
+              const SizedBox(height: 28),
+              const CalmScene(height: 200, mood: SceneMood.amanecer),
               const Spacer(flex: 3),
               // Botón Comenzar
               SizedBox(

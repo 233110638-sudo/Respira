@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../core_theme.dart';
 import '../data/respira_store.dart';
 import '../data/small_steps.dart';
+import '../widgets/calm_scene.dart';
 import '../widgets/crisis_badge_button.dart';
 
 /// "Pequeños pasos": lista de actividades breves que la persona
@@ -61,7 +62,9 @@ class ActivationScreen extends StatelessWidget {
               'Cuando todo cuesta más trabajo, hacer algo pequeño puede ayudar a mover el ánimo. No tienes que hacerlos todos.',
               style: TextStyle(fontSize: 15, color: AppColors.textoSecundario, height: 1.4),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
+            const CalmScene(height: 120, mood: SceneMood.amanecer),
+            const SizedBox(height: 18),
             // Progreso del día
             Container(
               padding: const EdgeInsets.all(16),

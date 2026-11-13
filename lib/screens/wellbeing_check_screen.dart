@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core_theme.dart';
 import '../data/check_area.dart';
+import '../widgets/calm_scene.dart';
 import '../widgets/crisis_badge_button.dart';
 import '../widgets/lifeline_card.dart';
 import 'crisis_screen.dart';
@@ -81,6 +82,25 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
           '¿Has tenido pensamientos de acabar con tu vida o de hacerte daño de alguna manera?',
       area: CheckArea.seguridad,
     ),
+  ];
+
+  static const _sceneMoods = [
+    SceneMood.amanecer,
+    SceneMood.dia,
+    SceneMood.atardecer,
+  ];
+
+  // Frases tranquilas que acompañan cada pregunta.
+  static const _phrases = [
+    'Tómate tu tiempo. No hay respuestas buenas ni malas.',
+    'Lo que sientes es válido, sea lo que sea.',
+    'Respira profundo antes de contestar, si te ayuda.',
+    'Ser honesto/a contigo es una forma de cuidarte.',
+    'Vas a tu ritmo. Puedes regresar a la pregunta anterior.',
+    'Reconocer cómo estás ya es un paso importante.',
+    'No estás solo/a: mucha gente pasa por días así.',
+    'Ya casi terminas. Gracias por darte este momento.',
+    'Pase lo que pase, hay personas dispuestas a escucharte.',
   ];
 
   void _onOptionSelected(int optionIndex) {
@@ -193,63 +213,71 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
-              // Pregunta con transición suave al cambiar
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
-                layoutBuilder: (current, previous) => Stack(
-                  alignment: Alignment.topLeft,
-                  children: [...previous, ?current],
-                ),
-                transitionBuilder: (child, animation) => FadeTransition(
-                  opacity: animation,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0.08, 0),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  ),
-                ),
-                child: Column(
-                  key: ValueKey(_currentIndex),
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 46,
-                      height: 46,
-                      decoration: BoxDecoration(
-                        color: currentQ.isSafetyQuestion
-                            ? AppColors.alertaFondo
-                            : AppColors.primarioClaro,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(
-                        currentQ.area.icon,
-                        color: currentQ.isSafetyQuestion
-                            ? AppColors.alerta
-                            : AppColors.primario,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      currentQ.question,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textoPrincipal,
-                        height: 1.28,
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 18),
               Expanded(
                 child: ListView(
                   physics: const BouncingScrollPhysics(),
                   children: [
+                    // Paisaje que cambia con cada pregunta
+                    CalmScene(
+                      key: ValueKey('escena_$_currentIndex'),
+                      height: 130,
+                      mood: currentQ.isSafetyQuestion
+                          ? SceneMood.amanecer
+                          : _sceneMoods[_currentIndex % _sceneMoods.length],
+                    ),
+                    const SizedBox(height: 18),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      layoutBuilder: (current, previous) => Stack(
+                        alignment: Alignment.topLeft,
+                        children: [...previous, ?current],
+                      ),
+                      transitionBuilder: (child, animation) => FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0.08, 0),
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: child,
+                        ),
+                      ),
+                      child: Column(
+                        key: ValueKey(_currentIndex),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 46,
+                            height: 46,
+                            decoration: BoxDecoration(
+                              color: currentQ.isSafetyQuestion
+                                  ? AppColors.alertaFondo
+                                  : AppColors.primarioClaro,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Icon(
+                              currentQ.area.icon,
+                              color: currentQ.isSafetyQuestion
+                                  ? AppColors.alerta
+                                  : AppColors.primario,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          Text(
+                            currentQ.question,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textoPrincipal,
+                              height: 1.28,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 18),
                     for (var index = 0; index < _options.length; index++) ...[
                       _OptionTile(
                         option: _options[index],
@@ -258,6 +286,9 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
                       ),
                       const SizedBox(height: 10),
                     ],
+                    const SizedBox(height: 6),
+                    _CalmTip(text: _phrases[_currentIndex % _phrases.length]),
+                    const SizedBox(height: 12),
                   ],
                 ),
               ),
@@ -363,6 +394,45 @@ class _OptionTile extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _CalmTip extends StatelessWidget {
+  const _CalmTip({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.calidoFondo,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.spa_rounded, color: AppColors.calido, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: Text(
+                text,
+                key: ValueKey(text),
+                style: const TextStyle(
+                  fontSize: 14,
+                  height: 1.4,
+                  fontStyle: FontStyle.italic,
+                  color: AppColors.textoPrincipal,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
