@@ -15,6 +15,19 @@ class AppColors {
   static const Color alerta = Color(0xFFA82721); // Rojo para botones de emergencia y crisis
   static const Color alertaFondo = Color(0xFFFDEEED); // Fondo rosa suave para avisos de riesgo
   static const Color borde = Color(0xFFE2E6E3); // Borde sutil de tarjetas
+  static const Color calido = Color(0xFFE59A4C); // Acento cálido para ánimo y logros
+  static const Color calidoFondo = Color(0xFFFFF3E6); // Fondo cálido suave
+  static const Color psicologo = Color(0xFF3E5C8A); // Azul para la recomendación profesional
+  static const Color psicologoFondo = Color(0xFFEAF0F8);
+
+  // Colores para los niveles de ánimo (de muy bajo a muy bien).
+  static const List<Color> animo = [
+    Color(0xFF7C8AA5),
+    Color(0xFF8FA3B8),
+    Color(0xFFB7B38A),
+    Color(0xFF7FB08F),
+    Color(0xFF4F9A78),
+  ];
 }
 
 ThemeData buildRespiraTheme() {

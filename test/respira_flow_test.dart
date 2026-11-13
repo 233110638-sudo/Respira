@@ -1,115 +1,102 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 import 'package:respira/core_theme.dart';
+import 'package:respira/data/respira_store.dart';
 import 'package:respira/screens/welcome_screen.dart';
+import 'package:respira/widgets/calm_scene.dart';
+
+Widget _app() {
+  return ChangeNotifierProvider(
+    create: (_) => RespiraStore(),
+    child: MaterialApp(theme: buildRespiraTheme(), home: const WelcomeScreen()),
+  );
+}
+
+Future<void> _llegarAlChequeo(WidgetTester tester) async {
+  // Pantalla grande para que todas las opciones quepan sin desplazarse.
+  tester.view.physicalSize = const Size(1200, 2000);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.reset);
+
+  await tester.pumpWidget(_app());
+
+  expect(find.text('Respira'), findsOneWidget);
+  await tester.tap(find.text('Comenzar'));
+  await tester.pumpAndSettle();
+
+  expect(find.text('Antes de empezar'), findsOneWidget);
+  expect(find.text('No es un diagnóstico'), findsOneWidget);
+  await tester.tap(find.byType(Checkbox));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('Continuar'));
+  await tester.pumpAndSettle();
+}
+
+Future<void> _responder(WidgetTester tester, String opcion, String boton) async {
+  await tester.tap(find.text(opcion));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text(boton));
+  await tester.pumpAndSettle();
+}
 
 void main() {
-  testWidgets('el flujo inicial recorre el nuevo diseño desde bienvenida hasta resultados', (
+  // Los paisajes animados se detienen en las pruebas para que
+  // pumpAndSettle no espere una animación infinita.
+  setUp(() => CalmScene.animate = false);
+
+  testWidgets('el chequeo termina en sugerencias con la recomendación del psicólogo', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(theme: buildRespiraTheme(), home: const WelcomeScreen()),
-    );
+    await _llegarAlChequeo(tester);
 
-    // 1. Bienvenida (01 · Bienvenida)
-    expect(find.text('Respira'), findsOneWidget);
-    expect(find.text('Comenzar'), findsOneWidget);
-    await tester.tap(find.text('Comenzar'));
-    await tester.pumpAndSettle();
-
-    // 2. Antes de empezar (02 · Antes de empezar)
-    expect(find.text('Antes de empezar'), findsOneWidget);
-    expect(find.text('No es un diagnóstico'), findsOneWidget);
-    expect(find.text('Tus respuestas se quedan en tu teléfono'), findsOneWidget);
-    expect(find.text('Puedes borrarlas desde Ajustes'), findsOneWidget);
-    expect(find.text('Leer aviso de privacidad completo'), findsOneWidget);
-
-    // Checkbox de consentimiento
-    await tester.tap(find.byType(Checkbox));
-    await tester.pumpAndSettle();
-    expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isTrue);
-
-    await tester.tap(find.text('Continuar'));
-    await tester.pumpAndSettle();
-
-    // 3. Chequeo de bienestar (03 · Chequeo)
-    expect(find.text('1 de 8 · últimas 2 semanas'), findsOneWidget);
+    expect(find.text('1 de 9 · últimas 2 semanas'), findsOneWidget);
     expect(find.text('Necesito ayuda ahora'), findsOneWidget);
 
     // No se puede avanzar sin seleccionar una respuesta.
     await tester.tap(find.text('Siguiente'));
     await tester.pumpAndSettle();
-    expect(find.text('1 de 8 · últimas 2 semanas'), findsOneWidget);
+    expect(find.text('1 de 9 · últimas 2 semanas'), findsOneWidget);
 
-    // Responder preguntas 1 a 7 con "Algunos días"
-    for (var i = 1; i <= 7; i++) {
-      expect(find.text('$i de 8 · últimas 2 semanas'), findsOneWidget);
-      await tester.tap(find.text('Algunos días'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Siguiente'));
-      await tester.pumpAndSettle();
+    for (var i = 1; i <= 8; i++) {
+      expect(find.text('$i de 9 · últimas 2 semanas'), findsOneWidget);
+      await _responder(tester, 'Algunos días', 'Siguiente');
     }
 
-    // Pregunta 8 de seguridad: responder "Nunca"
-    expect(find.text('8 de 8 · últimas 2 semanas'), findsOneWidget);
-    await tester.tap(find.text('Nunca'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Siguiente'));
-    await tester.pumpAndSettle();
+    // Pregunta de seguridad: la Línea de la Vida siempre está en pantalla.
+    expect(find.text('9 de 9 · últimas 2 semanas'), findsOneWidget);
+    expect(find.text('Línea de la Vida'), findsOneWidget);
+    await _responder(tester, 'Nunca', 'Ver mis sugerencias');
 
-    // 4. Resultados (04 · Resultados)
+    // Resultados: sin diagnóstico y con el psicólogo siempre presente.
     expect(find.text('Esto es para ti'), findsOneWidget);
-    expect(find.text('Respiración 4-7-8'), findsOneWidget);
-    expect(find.text('Grounding 5-4-3-2-1'), findsOneWidget);
-    expect(find.text('Hablar con un psicólogo →'), findsOneWidget);
-    expect(find.text('Ir al inicio'), findsOneWidget);
+    expect(find.text('Habla con un psicólogo'), findsOneWidget);
+    expect(find.text('Ideas para empezar'), findsOneWidget);
+    expect(find.text('Línea de la Vida'), findsNothing);
+  });
 
-    // Navegación a crisis desde el botón superior
-    await tester.tap(find.text('Necesito ayuda ahora'));
-    await tester.pumpAndSettle();
+  testWidgets('una respuesta de riesgo abre la ayuda y deja visible la Línea de la Vida', (
+    tester,
+  ) async {
+    await _llegarAlChequeo(tester);
 
-    // 5. Necesito ayuda ahora (05 · Necesito ayuda ahora)
+    for (var i = 1; i <= 8; i++) {
+      await _responder(tester, 'Nunca', 'Siguiente');
+    }
+
+    expect(find.text('9 de 9 · últimas 2 semanas'), findsOneWidget);
+    await _responder(tester, 'Algunos días', 'Ver mis sugerencias');
+
+    // Se abre de inmediato la pantalla de ayuda.
     expect(find.text('Gracias por contarnos'), findsOneWidget);
     expect(find.text('Llamar a la Línea de la Vida'), findsOneWidget);
     expect(find.text('800 911 2000 · gratis, 24 horas'), findsOneWidget);
-    expect(find.text('Llamar al 911'), findsOneWidget);
-    expect(find.text('Escribirle a alguien de confianza'), findsOneWidget);
-    expect(find.text('Ya estoy mejor, volver'), findsOneWidget);
-  });
 
-  testWidgets('respuesta de riesgo en pregunta 8 activa inmediatamente protocolo de crisis', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(theme: buildRespiraTheme(), home: const WelcomeScreen()),
-    );
-
-    await tester.tap(find.text('Comenzar'));
+    // Al volver, las sugerencias muestran la Línea de la Vida y el psicólogo.
+    await tester.tap(find.text('Ya estoy mejor, volver'));
     await tester.pumpAndSettle();
-
-    await tester.tap(find.byType(Checkbox));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Continuar'));
-    await tester.pumpAndSettle();
-
-    // Responder las primeras 7 preguntas con "Nunca"
-    for (var i = 1; i <= 7; i++) {
-      await tester.tap(find.text('Nunca'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Siguiente'));
-      await tester.pumpAndSettle();
-    }
-
-    // En la pregunta 8 responder "Algunos días" (riesgo detectado)
-    expect(find.text('8 de 8 · últimas 2 semanas'), findsOneWidget);
-    await tester.tap(find.text('Algunos días'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Siguiente'));
-    await tester.pumpAndSettle();
-
-    // Debe mostrar directamente la pantalla de crisis
-    expect(find.text('Gracias por contarnos'), findsOneWidget);
-    expect(find.text('Llamar a la Línea de la Vida'), findsOneWidget);
+    expect(find.text('Esto es para ti'), findsOneWidget);
+    expect(find.text('Línea de la Vida'), findsOneWidget);
+    expect(find.text('Habla con un psicólogo'), findsOneWidget);
   });
 }

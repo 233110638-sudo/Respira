@@ -165,7 +165,7 @@ class CrisisScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.alerta.withOpacity(0.25),
+                          color: AppColors.alerta.withValues(alpha: 0.25),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),

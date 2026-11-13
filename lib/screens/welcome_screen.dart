@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core_theme.dart';
+import '../widgets/calm_scene.dart';
 import '../widgets/respira_waves.dart';
 import 'consent_screen.dart';
 
@@ -34,6 +35,18 @@ class WelcomeScreen extends StatelessWidget {
                   letterSpacing: -0.5,
                 ),
               ),
+              const SizedBox(height: 10),
+              const Text(
+                'Pequeños pasos para los días en que el ánimo pesa.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textoSecundario,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 28),
+              const CalmScene(height: 200, mood: SceneMood.amanecer),
               const Spacer(flex: 3),
               // Botón Comenzar
               SizedBox(

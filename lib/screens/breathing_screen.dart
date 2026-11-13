@@ -149,7 +149,7 @@ class _BreathingScreenState extends State<BreathingScreen> {
                     color: AppColors.primario,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primario.withOpacity(0.18),
+                        color: AppColors.primario.withValues(alpha: 0.18),
                         blurRadius: 30,
                         spreadRadius: 8,
                       ),
