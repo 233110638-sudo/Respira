@@ -223,9 +223,9 @@ class _ConsentScreenState extends State<ConsentScreen> {
                       : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primario,
-                    disabledBackgroundColor: AppColors.primario.withOpacity(0.4),
+                    disabledBackgroundColor: AppColors.primario.withValues(alpha: 0.4),
                     foregroundColor: Colors.white,
-                    disabledForegroundColor: Colors.white.withOpacity(0.8),
+                    disabledForegroundColor: Colors.white.withValues(alpha: 0.8),
                     shape: const StadiumBorder(),
                     elevation: 0,
                   ),

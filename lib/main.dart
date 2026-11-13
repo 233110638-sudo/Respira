@@ -22,6 +22,21 @@ class RespiraApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: buildRespiraTheme(),
         home: const SplashScreen(),
+        // En pantallas anchas (web o tableta) la app se centra
+        // con un ancho máximo para que las tarjetas no se estiren.
+        builder: (context, child) => ColoredBox(
+          color: const Color(0xFFE9EEEB),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 560),
+              child: Material(
+                elevation: 2,
+                color: AppColors.fondo,
+                child: child,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

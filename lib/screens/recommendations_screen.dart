@@ -134,19 +134,39 @@ class RecommendationsScreen extends StatelessWidget {
               children: [CrisisBadgeButton()],
             ),
             const SizedBox(height: 22),
-            const Text(
-              'Esto es para ti',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w800,
-                color: AppColors.textoPrincipal,
-                letterSpacing: -0.5,
+            // Encabezado en tarjeta
+            Container(
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppColors.primario, AppColors.primarioOscuro],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(24),
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Gracias por tomarte este tiempo. Esto no es un diagnóstico: son ideas para cuidarte mientras buscas apoyo.',
-              style: TextStyle(fontSize: 15, height: 1.4, color: AppColors.textoSecundario),
+              child: const Column(
+                children: [
+                  Icon(Icons.spa_rounded, color: Colors.white, size: 36),
+                  SizedBox(height: 12),
+                  Text(
+                    'Esto es para ti',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Gracias por tomarte este tiempo. Esto no es un diagnóstico: son ideas para cuidarte mientras buscas apoyo.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14.5, height: 1.4, color: Color(0xFFE3EEEA)),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 22),
             if (safetyConcern) ...[
@@ -158,26 +178,45 @@ class RecommendationsScreen extends StatelessWidget {
             ],
             // Recomendación obligatoria, sin importar las respuestas
             const PsychologistCard(),
-            const SizedBox(height: 26),
-            const Text(
-              'Ideas para empezar',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: AppColors.textoPrincipal,
+            const SizedBox(height: 18),
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: AppColors.borde),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Row(
+                    children: [
+                      Icon(Icons.lightbulb_rounded, color: AppColors.calido, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Ideas para empezar',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textoPrincipal,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  for (final s in suggestions) ...[
+                    _RecommendationCard(
+                      suggestion: s,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: s.builder),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            for (final s in suggestions) ...[
-              _RecommendationCard(
-                suggestion: s,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: s.builder),
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
             const SizedBox(height: 16),
             Center(
               child: GestureDetector(
@@ -226,9 +265,8 @@ class _RecommendationCard extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.fondo,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E6E3)),
           ),
           child: Row(
             children: [

@@ -199,7 +199,7 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
                 duration: const Duration(milliseconds: 250),
                 layoutBuilder: (current, previous) => Stack(
                   alignment: Alignment.topLeft,
-                  children: [...previous, if (current != null) current],
+                  children: [...previous, ?current],
                 ),
                 transitionBuilder: (child, animation) => FadeTransition(
                   opacity: animation,
@@ -258,18 +258,19 @@ class _WellbeingCheckScreenState extends State<WellbeingCheckScreen> {
                       ),
                       const SizedBox(height: 10),
                     ],
-                    // En la pregunta de seguridad siempre se muestra la Línea de la Vida
-                    if (currentQ.isSafetyQuestion) ...[
-                      const SizedBox(height: 6),
-                      LifelineCard(
-                        message: (selectedOption ?? 0) > 0
-                            ? 'Gracias por tu honestidad. No estás solo/a: hay personas listas para escucharte ahora mismo.'
-                            : 'Si alguna vez lo has pensado, puedes llamar en cualquier momento:',
-                      ),
-                    ],
                   ],
                 ),
               ),
+              // En la pregunta de seguridad la Línea de la Vida queda fija en pantalla
+              if (currentQ.isSafetyQuestion) ...[
+                const SizedBox(height: 10),
+                LifelineCard(
+                  message: (selectedOption ?? 0) > 0
+                      ? 'Gracias por tu honestidad. No estás solo/a: hay personas listas para escucharte ahora mismo.'
+                      : 'Si alguna vez lo has pensado, puedes llamar en cualquier momento:',
+                ),
+                const SizedBox(height: 12),
+              ],
               SizedBox(
                 width: double.infinity,
                 height: 52,

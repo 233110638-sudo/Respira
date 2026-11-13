@@ -75,7 +75,7 @@ class MoodCheckIn extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.animo[today.level].withOpacity(0.12),
+                        color: AppColors.animo[today.level].withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Text(
@@ -148,7 +148,7 @@ class _MoodButton extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: selected ? color : color.withOpacity(0.12),
+                color: selected ? color : color.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: Icon(

@@ -185,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.alerta.withOpacity(0.32),
+                          color: AppColors.alerta.withValues(alpha: 0.32),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -322,7 +322,7 @@ class _HomeActionCard extends StatelessWidget {
             border: Border.all(color: const Color(0xFFE2E6E3)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.02),
+                color: Colors.black.withValues(alpha: 0.02),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
